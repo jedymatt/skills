@@ -43,47 +43,7 @@ git town propose -t "Add auth" -b "Implements OAuth2"
 
 ---
 
-## Stacked Changes
-
-### append
-New feature branch as a direct child of the current branch. Syncs current first if clean.
-```bash
-git town append step-2               # child of current branch
-git town append step-2 -p            # prototype child
-```
-
-### prepend
-Insert a new branch between the current branch and its parent.
-```bash
-git town prepend setup-step          # becomes the new parent of current branch
-```
-
-### commit
-Commit staged changes into the current branch, or into an ancestor with `--up`, then sync the change down the stack.
-```bash
-git town commit -m "Fix typo"                 # current branch
-git town commit --up=1 -m "Fix in parent"     # into parent (--up=2 = grandparent), then sync children
-```
-
-### detach
-Remove the current branch from the stack; it becomes top-level and ships straight to main.
-
-### merge
-Merge the current branch into its parent, then delete the current branch.
-
-### swap
-Switch the current branch's position with its parent. Needs all branches synced with no merge commits.
-
-### set-parent
-Move a branch (and its children) under a different parent. `--none` makes it independent.
-
-### diff-parent
-Show the changes on the current branch (diff against its parent).
-
-### up / down
-Move to a child (`up`) or parent (`down`) in the stack. `--merge` carries uncommitted changes along.
-
----
+> Stacking commands — `append`, `prepend`, `commit --up`, `swap`, `detach`, `set-parent`, `up`/`down`, `walk` — are in the **pr-stacking** skill.
 
 ## Branch Type Commands
 
@@ -140,13 +100,6 @@ Remove a branch locally and remotely; child branches are reparented to its paren
 
 ### rename
 Rename a branch and its tracking branch; updates associated PRs. `--force` for perennial branches.
-
-### walk
-Run a command on each branch in the stack (or `--all`). Good for lint/test across a stack.
-```bash
-git town walk "pnpm test"            # run on each stack branch
-git town walk --all "pnpm lint"
-```
 
 ### repo
 Open the forge repository page in the browser.

@@ -8,7 +8,8 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 |-------|--------------|
 | `coding-principles` | Code-quality defaults: Rule of Three, single responsibility, no boolean params, max 3 args, named constants, narrow coupling, no over-engineering (YAGNI). |
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
-| `git-town` | How to use [Git Town](https://www.git-town.com/) for branches, stacks, syncing, and shipping. |
+| `git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
+| `pr-stacking` | Stacked PRs with Git Town: dependent branches, whole-stack sync/propose, and shipping a stack in order. Builds on `git-town`. |
 | `writing-plain-english` | Write simple, natural English. Short sentences, plain words, no filler. |
 
 ## Install with the skills CLI (any agent)
