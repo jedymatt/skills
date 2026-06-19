@@ -1,5 +1,5 @@
 ---
-name: pr-stacking
+name: stacking-prs
 description: Use when building or managing stacked PRs / dependent branches with Git Town — creating child or parent branches, committing into an ancestor, syncing or proposing a whole stack, shipping a stack in order, or reordering/detaching branches. Triggers on "stacked changes", "PR stack", "stack of branches", "append branch", "prepend branch", "sync --stack", "propose --stack", "ship the stack".
 ---
 
@@ -9,7 +9,7 @@ description: Use when building or managing stacked PRs / dependent branches with
 
 A stack is a chain of dependent branches — each the child of the one before — so a large change ships as a series of small, reviewable PRs instead of one big one. Git Town tracks the parent→child lineage and keeps the chain in sync.
 
-**REQUIRED BACKGROUND:** the **git-town** skill. Install/init, branch types, config, and error recovery (`continue`/`skip`/`undo`) all apply here and are not repeated.
+**REQUIRED BACKGROUND:** the **using-git-town** skill. Install/init, branch types, config, and error recovery (`continue`/`skip`/`undo`) all apply here and are not repeated.
 
 ## When to Use
 

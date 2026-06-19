@@ -8,8 +8,8 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 |-------|--------------|
 | `coding-principles` | Code-quality defaults: Rule of Three, single responsibility, no boolean params, max 3 args, named constants, narrow coupling, no over-engineering (YAGNI). |
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
-| `git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
-| `pr-stacking` | Stacked PRs with Git Town: dependent branches, whole-stack sync/propose, and shipping a stack in order. Builds on `git-town`. |
+| `stacking-prs` | Stacked PRs with Git Town: dependent branches, whole-stack sync/propose, and shipping a stack in order. Builds on `using-git-town`. |
+| `using-git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
 | `writing-plain-english` | Write simple, natural English. Short sentences, plain words, no filler. |
 
 ## Install with the skills CLI (any agent)
@@ -51,6 +51,6 @@ npx skills remove                 # remove skills (interactive)
 
 1. Make a folder under `skills/` named after the skill (kebab-case).
 2. Put a `SKILL.md` inside with `name` and `description` frontmatter.
-3. Add longer docs under a `reference/` subfolder if needed (see `git-town`).
+3. Add longer docs under a `reference/` subfolder if needed (see `using-git-town`).
 4. Commit and push to GitHub.
 5. Run `npx skills update -g` to pick up the change. (Plugin users: bump `version` in `.claude-plugin/plugin.json` too, so `/plugin marketplace update` sees it.)

@@ -1,6 +1,6 @@
 ---
-name: git-town
-description: Use when creating a feature branch, switching branches, syncing a branch with its parent or main, proposing a PR, or shipping completed work with git-town. Also for recovering from conflicts during git-town operations. Triggers on "create a branch", "new branch", "switch branch", git-town, hack, sync, propose, ship. For stacked/dependent branches, see pr-stacking.
+name: using-git-town
+description: Use when creating a feature branch, switching branches, syncing a branch with its parent or main, proposing a PR, or shipping completed work with git-town. Also for recovering from conflicts during git-town operations. Triggers on "create a branch", "new branch", "switch branch", git-town, hack, sync, propose, ship. For stacked/dependent branches, see stacking-prs.
 ---
 
 # Git Town
@@ -9,7 +9,7 @@ description: Use when creating a feature branch, switching branches, syncing a b
 
 Git Town (v23+) is a high-level Git CLI that automates branch creation, syncing, and shipping, and tracks a branch lineage tree. Install: `brew install git-town`. Setup: `git town init`.
 
-**Stacking PRs (dependent branches)?** Use the **pr-stacking** skill — `append`, `prepend`, whole-stack sync/propose, and stack shipping live there.
+**Stacking PRs (dependent branches)?** Use the **stacking-prs** skill — `append`, `prepend`, whole-stack sync/propose, and stack shipping live there.
 
 ## When to Use
 
@@ -17,7 +17,7 @@ Git Town (v23+) is a high-level Git CLI that automates branch creation, syncing,
 - Proposing a PR and shipping completed work through the forge.
 - Recovering from merge conflicts during git-town operations.
 
-**Do NOT use for:** ordinary commits on the current branch (use standard `git commit`), worktree isolation (use `using-git-worktrees`), rebasing onto master in Quickli (use `quickli-rebase`). For stacked/dependent branches, use **pr-stacking**.
+**Do NOT use for:** ordinary commits on the current branch (use standard `git commit`), worktree isolation (use `using-git-worktrees`), rebasing onto master in Quickli (use `quickli-rebase`). For stacked/dependent branches, use **stacking-prs**.
 
 ## Quick Reference
 
@@ -38,7 +38,7 @@ Git Town (v23+) is a high-level Git CLI that automates branch creation, syncing,
 | `branch` | Show hierarchy | |
 | `config` | View/update config | `--redact` |
 
-Stacking commands (`append`, `prepend`, `commit --up`, `sync --stack`, `propose --stack`, `ship --to-parent`, `up`/`down`, `swap`, `detach`, `set-parent`, `walk`) are in **pr-stacking**.
+Stacking commands (`append`, `prepend`, `commit --up`, `sync --stack`, `propose --stack`, `ship --to-parent`, `up`/`down`, `swap`, `detach`, `set-parent`, `walk`) are in **stacking-prs**.
 
 ## Common Workflows
 
@@ -87,4 +87,4 @@ git town ship                      # ships current branch to main
 
 See `reference/commands.md` for command details and all flags.
 See `reference/configuration.md` for config options, sync strategies, and forge setup.
-Stacking commands live in the **pr-stacking** skill.
+Stacking commands live in the **stacking-prs** skill.
