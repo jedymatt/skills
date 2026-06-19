@@ -1,0 +1,11 @@
+{
+  "name": "jedymatt-skills",
+  "version": "0.1.0",
+  "description": "jedymatt's personal Claude Code skills: coding-principles, git-town, and writing-plain-english.",
+  "author": {
+    "name": "jedymatt"
+  },
+  "homepage": "https://github.com/jedymatt/skills",
+  "repository": "https://github.com/jedymatt/skills",
+  "keywords": ["skills", "coding-principles", "git-town", "writing-plain-english"]
+}

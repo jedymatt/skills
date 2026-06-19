@@ -1,0 +1,14 @@
+{
+  "name": "jedymatt",
+  "owner": {
+    "name": "jedymatt",
+    "url": "https://github.com/jedymatt"
+  },
+  "plugins": [
+    {
+      "name": "jedymatt-skills",
+      "source": "./",
+      "description": "jedymatt's personal Claude Code skills: coding-principles, git-town, and writing-plain-english."
+    }
+  ]
+}
