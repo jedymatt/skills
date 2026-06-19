@@ -8,6 +8,8 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 |-------|--------------|
 | `coding-principles` | Code-quality defaults: Rule of Three, single responsibility, no boolean params, max 3 args, named constants, narrow coupling, no over-engineering (YAGNI). |
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
+| `handoff` | Save a short, forward-looking note (per-topic, named by git branch) to `.handoff/handoff.md` so the next session can pick up. You pick which topics carry forward. Pairs with `load-handoff`. |
+| `load-handoff` | Read back the handoff saved by `handoff` — "where was I?" / "catch me up". Shows all topics, or one. Read-only. |
 | `stacking-prs` | Stacked PRs with Git Town: dependent branches, whole-stack sync/propose, and shipping a stack in order. Builds on `using-git-town`. |
 | `using-git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
 | `writing-plain-english` | Write simple, natural English. Short sentences, plain words, no filler. |
