@@ -1,2 +1,6 @@
 .remember/
 .DS_Store
+
+# `npx skills` install artifacts (this is the source repo; these are consumer-side)
+.agents/
+skills-lock.json
