@@ -142,16 +142,7 @@ Or environment variable:
 export GIT_TOWN_GITHUB_TOKEN=<token>
 ```
 
-## Branch Type Sync Behavior
-
-| Type | Syncs from parent | Pushes to remote | Auto-removes when tracking deleted |
-|------|-------------------|------------------|------------------------------------|
-| Feature | Yes | Yes | Yes (if no unshipped changes) |
-| Contribution | No | Yes | Yes |
-| Observed | No | No (read-only) | Yes |
-| Parked | No (unless explicit) | No (unless explicit) | No |
-| Prototype | Yes | No | No |
-| Perennial | Yes (from origin) | Yes | No |
+> Branch-type sync/push behavior: see the Branch Types table in `SKILL.md`.
 
 ## Setting Config via Git
 
