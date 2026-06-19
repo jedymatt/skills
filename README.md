@@ -6,7 +6,7 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 
 | Skill | What it does |
 |-------|--------------|
-| `coding-principles` | Code-quality defaults: Rule of Three, single responsibility, no boolean params, max 3 args, named constants, narrow coupling. |
+| `coding-principles` | Code-quality defaults: Rule of Three, single responsibility, no boolean params, max 3 args, named constants, narrow coupling, no over-engineering (YAGNI). |
 | `git-town` | How to use [Git Town](https://www.git-town.com/) for branches, stacks, syncing, and shipping. |
 | `writing-plain-english` | Write simple, natural English. Short sentences, plain words, no filler. |
 
