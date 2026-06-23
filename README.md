@@ -6,6 +6,7 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 
 | Skill | What it does |
 |-------|--------------|
+| `architecture-principles` | Module-level defaults: one-way dependencies (no cycles), depend on abstractions, code lives with its data (no `utils` dumping ground), narrow contracts, wrap external systems behind ports, one-way data flow, no over-architecting (YAGNI). One altitude above `coding-principles`. |
 | `coding-principles` | Code-quality defaults: Rule of Three, single responsibility, no boolean params, max 3 args, named constants, narrow coupling, no over-engineering (YAGNI). |
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
 | `handoff` | Save a short, forward-looking note (per-topic, named by git branch) to `.handoff/handoff.md` so the next session can pick up. You pick which topics carry forward. Pairs with `load-handoff`. |
