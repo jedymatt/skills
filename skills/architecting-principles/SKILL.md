@@ -1,9 +1,9 @@
 ---
-name: architecture-principles
+name: architecting-principles
 description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), split or merge modules, or add a structural boundary for a future need.
 ---
 
-# Architecture Principles
+# Architecting Principles
 
 Personal defaults for architecture-level judgment, in any language. One level above **coding-principles**: that skill governs *inside a function* (params, literals, reaching through `a.b.c`); this one governs *between* modules, packages, and components — where code lives and how the parts depend on each other. Scope: **structural decisions on the code you're writing or changing.** Flag larger restructures as findings; never drive-by re-architect untouched code.
 
