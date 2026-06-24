@@ -19,6 +19,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
 | Calling behavior through a property chain | Accept the collaborator directly |
+| Naming a function or a variable | Function/method = verb phrase (`send_receipt`); variable/field/param = noun phrase (`days_until_cutoff`); boolean = predicate (`is_active`) |
 | Tempted to write a comment | Rename/restructure until it's unneeded; comment only the naturally-complex why |
 
 ## Rule of Three
@@ -80,6 +81,7 @@ Depend on the narrowest thing that works.
 
 Naming does the explaining — a comment is a fallback, not a habit:
 
+- **Name by part of speech.** A function or method is a *verb phrase* — it does something: `calculate_total`, `send_receipt`, `parse_header`, never `total()` or `receipt()`. A variable, field, or parameter is a *noun phrase* — it holds something: `days_until_cutoff`, `pending_orders`, never `calculate` or `done`. A boolean reads as a *predicate*: `is_active`, `has_balance`, `can_retry`.
 - Name variables and functions so no comment is needed: `days_until_cutoff`, not `d` plus a comment.
 - A comment that paraphrases the adjacent code or name gets deleted (`# truncate the subject` above `truncate_subject`).
 - Doc-banners and section markers aren't documentation — they're the SRP sign above.
@@ -105,6 +107,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - Review comment demanding extraction of code that appears only twice
 - Growing a new phase inside an already-staged function instead of splitting it
 - A method call at the end of an `a.b.c.d` chain
+- A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
 - Refactoring functions your task didn't touch
 - An abstraction, config knob, or parameter whose only caller is hypothetical
