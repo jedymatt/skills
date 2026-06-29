@@ -31,10 +31,19 @@ assert_equals "$out" "{}" "second edit in same session is silent"
 out="$(printf '%s' '{"session_id":"sess-B","tool_input":{"file_path":"/x/README.md"}}' | run)"
 assert_equals "$out" "{}" "markdown file is silent"
 
-# 4: empty / malformed stdin → silent, exit 0
+# 4: empty stdin → silent, exit 0
 out="$(printf '%s' '' | run)"; rc=$?
 assert_equals "$out" "{}" "empty stdin is silent"
 [ "$rc" -eq 0 ] && echo "PASS: empty stdin exits 0" || { echo "FAIL: empty stdin exit code $rc"; fail=1; }
+
+# 5: malformed (non-empty) JSON → silent, exit 0
+out="$(printf '%s' '{"session_id":' | run)"; rc=$?
+assert_equals "$out" "{}" "malformed JSON is silent"
+[ "$rc" -eq 0 ] && echo "PASS: malformed JSON exits 0" || { echo "FAIL: malformed JSON exit code $rc"; fail=1; }
+
+# 6: code file with no session_id → reminder still fires (dedup can't key, by design)
+out="$(printf '%s' '{"tool_input":{"file_path":"/x/foo.py"}}' | run)"
+assert_contains "$out" "coding-principles" "absent session_id still emits reminder"
 
 [ "$fail" -eq 0 ] && echo "All tests passed." || echo "Some tests failed."
 exit $fail

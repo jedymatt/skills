@@ -5,7 +5,7 @@
 # unmet condition prints {} and exits 0, so an edit is never blocked.
 set -u
 
-emit_nothing() { printf '{}'; exit 0; }
+emit_nothing() { printf '{}\n'; exit 0; }
 
 # jq parses the hook payload; without it, stay silent rather than guess.
 command -v jq >/dev/null 2>&1 || emit_nothing
