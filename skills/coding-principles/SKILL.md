@@ -24,6 +24,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
 | Calling behavior through a property chain | Accept the collaborator directly |
+| A `get_`/`is_` query that also mutates, or a command you read a value from | Split: queries return and don't change; commands change and don't return |
 | Naming a function or a variable | Function/method = verb phrase (`send_receipt`); variable/field/param = noun phrase (`days_until_cutoff`); boolean = predicate (`is_active`) |
 | Tempted to write a comment | Rename/restructure until it's unneeded; comment only the naturally-complex why |
 
@@ -202,6 +203,29 @@ Depend on the narrowest thing that works.
 - **Take what you use.** Don't accept a whole object to read one or two fields — `send_receipt(email, …)`, not `send_receipt(account)` reading `account.profile.contact.email`. Framework-imposed signatures (ctx/request handlers) are exempt, and entry points may accept the domain object the caller naturally holds — narrow it immediately and pass pieces onward.
 - **Don't reach through.** Calling behavior at the end of a property chain (`account.billing.gateway.client.charge(…)`) couples you to every link — accept the collaborator (the `client`, or a `charge` capability) instead. Reading fields off plain data shapes is fine.
 
+## Command–query separation
+
+A function either **does** something or **answers** something — never both. A query returns a value and leaves the world unchanged; a command changes state and returns nothing to read. Mixing them means a caller can't ask a question without triggering a side effect, and can't tell from the call site that asking has a cost.
+
+- **Queries stay pure to the caller.** `get_balance()`, `is_ready()`, `current_id()` must not mutate, advance, or lazily create. If `get_X` changes X, rename it or split it.
+- **Commands return nothing to read.** `save()`, `enqueue(job)`, `retry()` act; don't smuggle a queried value out of them — fetch it with a separate query.
+- **No surprise on a getter.** The reader assumes an `is_`/`get_`/noun-ish call is free of consequences. Honour that so they needn't read the body to stay safe.
+- **Don't over-apply.** Idiomatic mutating reads stand by contract: `stack.pop()`, `cache.get_or_compute(k)`, an iterator's `next()`.
+
+```
+# NOT — a query that also mutates
+def next_ticket(self):
+    self.counter += 1      # command hidden inside a query
+    return self.counter
+
+# split: command changes, query answers
+def advance(self):         # command — returns nothing
+    self.counter += 1
+
+def current_ticket(self):  # query — no side effect
+    return self.counter
+```
+
 ## Self-explanatory code
 
 Naming does the explaining — a comment is a fallback, not a habit:
@@ -229,6 +253,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "`not is_not_done` is clear enough" | It's two flips to read. Name the positive predicate. |
 | "It's all one function's job" | One job can still mix altitudes. Name the low-level step and drop a level. |
 | "The condition is right there, inline" | Right there and re-decoded every read. Name the predicate once. |
+| "Returning the value from the setter saves a call" | Now no one can read it without mutating. Split query from command. |
 
 ## Red flags
 
@@ -242,6 +267,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - A condition negating a negative — `not`/`!` over an `is_not_…`/`un…`/`dis…` name, or two negatives in one boolean expression
 - A multi-clause boolean or nested ternary evaluated inline in an `if`/`while`/`?:` instead of a named predicate
 - A method call at the end of an `a.b.c.d` chain
+- A `get_`/`is_`-named function with a side effect, or a value smuggled out of a state-changing command
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
 - Refactoring functions your task didn't touch
