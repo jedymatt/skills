@@ -15,6 +15,12 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 | `using-git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
 | `writing-plain-english` | Write simple, natural English. Short sentences, plain words, no filler. |
 
+## Auto-activation
+
+Installed as a **Claude Code plugin**, a `PreToolUse` hook reminds Claude to invoke `coding-principles` (and `architecting-principles` for structural changes) the first time it edits a **code file** in a session. It fires once per session, only for code-file extensions (not `.md`, docs, or config), and never blocks the edit. Requires [`jq`](https://jqlang.github.io/jq/).
+
+The hook ships only with the plugin install path. With the [`skills`](https://skills.sh) CLI (or other agents), the skills' descriptions still prompt activation on their own — best-effort, since that path can't bundle hooks.
+
 ## Install with the skills CLI (any agent)
 
 Install all skills for every project (user-level):
