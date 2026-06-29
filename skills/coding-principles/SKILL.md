@@ -15,6 +15,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | Same logic appears a 3rd time | Extract now (Rule of Three / DRY) |
 | About to add abstraction/config/a param "for later" | Don't — build only what the task needs now (YAGNI) |
 | Writing or growing a function with SRP signs (below) | Split into named phase functions |
+| Wrapping a function body in `if (ok) { … }` | Guard clause — bail early on the negative, keep the happy path flat |
 | Tempted to add a boolean param | Split or enum/union (see below) |
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
@@ -46,6 +47,33 @@ A function does one job, stateable in one sentence without "and". "Too long" is 
 - No one-sentence summary possible
 
 Split when you're writing a function that would show these signs — or when your change **grows** one that already does (adds or extends a phase): the new logic lands as its own named phase function, never inlined as another stage of the monolith. A small landing (a line or two) in a staged function doesn't obligate decomposing it — flag the smell instead of fixing it uninvited. Exception: mechanical migrations told to mirror existing structure.
+
+## Early return
+
+Handle preconditions, edge cases, and error paths first — return or throw immediately so the main logic stays at the base indentation. The happy path reads top-to-bottom, never buried inside nested `if`s.
+
+- **Guard clause over nesting.** `if not valid: return` then continue, instead of wrapping the whole body in `if valid: { … }`.
+- **No `else` after a `return`.** The fallthrough already *is* the else — dedent it; an `else` branch following a return is dead structure.
+- **One bail per guard, named once at the top.** Each guard states a single reason to stop, before the work begins.
+- **Don't over-apply.** A handful of sequential guards is clarity; returns scattered through deep logic is a function doing too much — split it (single responsibility), not paper over it with more returns.
+
+```
+# NOT — arrow code, happy path buried
+def charge(order):
+    if order.is_valid:
+        if order.has_funds:
+            capture(order)
+        else:
+            raise NoFunds
+    else:
+        raise Invalid
+
+# guard clauses — flat happy path
+def charge(order):
+    if not order.is_valid: raise Invalid
+    if not order.has_funds: raise NoFunds
+    capture(order)
+```
 
 ## Boolean parameters
 
@@ -99,6 +127,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "It's basically the same function" | Then occurrence #3 will prove it. |
 | "Splitting it bloats the diff" | You're already modifying it — named phases review easier than a longer monolith. |
 | "We'll need this flexibility later" | Usually you won't, or you'll guess wrong. Add it when the need is real. |
+| "Single exit is cleaner" | One return buried in nested `if`s reads worse than guards that bail early up front. |
 
 ## Red flags
 
@@ -106,6 +135,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - A signature crossing 4 params ("just one more")
 - Review comment demanding extraction of code that appears only twice
 - Growing a new phase inside an already-staged function instead of splitting it
+- An `if` wrapping a whole function body, or an `else` immediately after a `return`
 - A method call at the end of an `a.b.c.d` chain
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
