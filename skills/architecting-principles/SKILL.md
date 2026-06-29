@@ -1,6 +1,6 @@
 ---
 name: architecting-principles
-description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), split or merge modules, or add a structural boundary for a future need.
+description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to create or edit code that changes structure: add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), split or merge modules, or add a structural boundary for a future need.
 ---
 
 # Architecting Principles

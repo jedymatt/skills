@@ -1,6 +1,6 @@
 ---
 name: coding-principles
-description: Use when writing, modifying, refactoring, or reviewing code — especially when about to extract duplicated logic, add a parameter to an existing function, pass a true/false argument, inline a numeric literal, write an explanatory comment, reach through an object's internals, or add abstraction or configuration for a future need.
+description: Use when writing, modifying, refactoring, or reviewing code — especially when about to create or edit a code file, extract duplicated logic, add a parameter to an existing function, pass a true/false argument, inline a numeric literal, write an explanatory comment, reach through an object's internals, or add abstraction or configuration for a future need.
 ---
 
 # Coding Principles
