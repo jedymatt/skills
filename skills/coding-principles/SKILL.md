@@ -15,6 +15,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | Same logic appears a 3rd time | Extract now (Rule of Three / DRY) |
 | About to add abstraction/config/a param "for later" | Don't — build only what the task needs now (YAGNI) |
 | Writing or growing a function with SRP signs (below) | Split into named phase functions |
+| A function mixing high-level intent with low-level mechanics | Lift the detail into a named helper — one altitude per function |
 | Wrapping a function body in `if (ok) { … }` | Guard clause — bail early on the negative, keep the happy path flat |
 | Writing a loop nested inside another, esp. 3+ deep | Extract the inner loop into a named function — each level stays one job |
 | Writing a condition that negates a negative (`!is_invalid`, `not disabled`) | Flip to a positive predicate; one negative is the limit |
@@ -49,6 +50,31 @@ A function does one job, stateable in one sentence without "and". "Too long" is 
 - No one-sentence summary possible
 
 Split when you're writing a function that would show these signs — or when your change **grows** one that already does (adds or extends a phase): the new logic lands as its own named phase function, never inlined as another stage of the monolith. A small landing (a line or two) in a staged function doesn't obligate decomposing it — flag the smell instead of fixing it uninvited. Exception: mechanical migrations told to mirror existing structure.
+
+## One level of abstraction
+
+Within a function, keep every step at the same altitude. Mixing a high-level decision (`if order.is_eligible`) with low-level mechanics (byte juggling, index math, raw SQL) in one body makes the reader change zoom on every line. Lift the low-level work behind a named helper so the function reads as one consistent story.
+
+- **Read it as a sentence.** Each line sits at one conceptual level — orchestrate calls, *or* do the fiddly work, not both interleaved.
+- **A name drops the reader down a level.** `notify(customer)` hides the SMTP and retry detail; the caller stays at intent. Push detail behind a name instead of inlining it.
+- **Distinct from single responsibility.** SRP asks *how many jobs* (one); this asks *how many altitudes* within that job (one). A function can do a single job yet still mix levels — extract the levels.
+- **Don't over-apply.** A one-line low-level touch inside a high-level function isn't a violation — extract when the altitude clash spans several lines or recurs.
+
+```
+# NOT — intent and byte-level detail interleaved
+def export_invoice(invoice):
+    if not invoice.is_final: raise NotFinal
+    record = invoice.id.rjust(8, "0") + "|" + f"{invoice.total:.2f}"
+    upload(record)
+
+# one altitude — the detail is named and a level down
+def export_invoice(invoice):
+    if not invoice.is_final: raise NotFinal
+    upload(to_record(invoice))
+
+def to_record(invoice):
+    return invoice.id.rjust(8, "0") + "|" + f"{invoice.total:.2f}"
+```
 
 ## Early return
 
@@ -180,6 +206,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "Single exit is cleaner" | One return buried in nested `if`s reads worse than guards that bail early up front. |
 | "It's just iterating, nesting is natural" | Past two levels you track every index at once. Extract the inner loop. |
 | "`not is_not_done` is clear enough" | It's two flips to read. Name the positive predicate. |
+| "It's all one function's job" | One job can still mix altitudes. Name the low-level step and drop a level. |
 
 ## Red flags
 
@@ -187,6 +214,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - A signature crossing 4 params ("just one more")
 - Review comment demanding extraction of code that appears only twice
 - Growing a new phase inside an already-staged function instead of splitting it
+- A function body that swings between orchestration and byte/index/SQL-level detail line to line
 - An `if` wrapping a whole function body, or an `else` immediately after a `return`
 - Three or more loops nested directly inside one another, or a loop body you can't summarize without "for each … and for each …"
 - A condition negating a negative — `not`/`!` over an `is_not_…`/`un…`/`dis…` name, or two negatives in one boolean expression

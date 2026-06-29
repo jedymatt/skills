@@ -28,6 +28,7 @@ Several map to **coding-principles** — for those, the fix lives there.
 | Smell | How to spot it | Fix direction |
 |---|---|---|
 | God function (low cohesion) | Body splits into phases; name undersells it; no one-sentence summary | Named phase functions — coding-principles |
+| Mixed abstraction levels | A function interleaves high-level intent and low-level mechanics | Lift the detail into a named helper — coding-principles |
 | Control-flag parameter | A `bool` that switches behavior | Two functions or an enum — coding-principles |
 | Long parameter list | 4+ positional params | Options object / bundle params that travel together — coding-principles |
 | Magic number | Bare meaningful literal in an expression | Named constant — coding-principles |
