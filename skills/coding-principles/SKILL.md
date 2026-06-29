@@ -17,6 +17,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | Writing or growing a function with SRP signs (below) | Split into named phase functions |
 | Wrapping a function body in `if (ok) { … }` | Guard clause — bail early on the negative, keep the happy path flat |
 | Writing a loop nested inside another, esp. 3+ deep | Extract the inner loop into a named function — each level stays one job |
+| Writing a condition that negates a negative (`!is_invalid`, `not disabled`) | Flip to a positive predicate; one negative is the limit |
 | Tempted to add a boolean param | Split or enum/union (see below) |
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
@@ -105,6 +106,25 @@ def total_team(team):
     return sum(member.hours for member in team.members)
 ```
 
+## Double negatives
+
+A condition should read as a positive assertion. Negating a negative — a `not` over an already-negative name (`!is_invalid`, `not is_not_verified`, `!disabled`), or two negatives in one expression — forces the reader to flip the meaning, often twice, before knowing what's true.
+
+- **Name the positive predicate.** Define `is_valid`, not `is_invalid`; `enabled`, not `disabled`. Then `if not is_valid` reads in one pass and `if is_valid` needs none. The naming rule below makes it a predicate; this keeps the predicate positive.
+- **Positivize compound conditions.** Apply De Morgan: `!(!a || !b)` → `a && b`; `not (not found or empty)` → `found and not empty`. Push the negation inward until each term is stated positively.
+- **One negative is the limit.** A single `not` is clear — a guard clause `if not is_valid: return` reads once. The smell is the *second* flip, not the first.
+- **Don't over-apply.** A genuinely negative domain term stays (`if not is_expired` is one honest negative); don't invent a positive antonym nobody uses just to dodge a `not`.
+
+```
+# NOT — negates a negative, reader flips twice
+if not user.is_not_verified:
+    grant_access()
+
+# positive predicate, reads once
+if user.is_verified:
+    grant_access()
+```
+
 ## Boolean parameters
 
 A new boolean flag parameter means the function grew a second behavior — an SRP violation. Decide case by case:
@@ -159,6 +179,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "We'll need this flexibility later" | Usually you won't, or you'll guess wrong. Add it when the need is real. |
 | "Single exit is cleaner" | One return buried in nested `if`s reads worse than guards that bail early up front. |
 | "It's just iterating, nesting is natural" | Past two levels you track every index at once. Extract the inner loop. |
+| "`not is_not_done` is clear enough" | It's two flips to read. Name the positive predicate. |
 
 ## Red flags
 
@@ -168,6 +189,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - Growing a new phase inside an already-staged function instead of splitting it
 - An `if` wrapping a whole function body, or an `else` immediately after a `return`
 - Three or more loops nested directly inside one another, or a loop body you can't summarize without "for each … and for each …"
+- A condition negating a negative — `not`/`!` over an `is_not_…`/`un…`/`dis…` name, or two negatives in one boolean expression
 - A method call at the end of an `a.b.c.d` chain
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
