@@ -47,6 +47,7 @@ Several map to **coding-principles** — for those, the fix lives there.
 | Mysterious name | `d`, `tmp`, `handle2`, or a name that misleads | Rename to what it is |
 | Part-of-speech mismatch | Function named as a noun, variable as a verb, boolean not a predicate | Verb for functions, noun for variables, predicate for booleans — coding-principles |
 | Deep nesting | Arrow-shaped conditionals 3+ levels deep | Early returns / guard clauses; extract — coding-principles |
+| Nested loops | Loops 3+ levels deep / a body that drives two collections at once | Extract the inner loop into a named function — coding-principles |
 
 ## Findings Format
 

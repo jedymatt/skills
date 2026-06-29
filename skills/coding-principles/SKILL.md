@@ -16,6 +16,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | About to add abstraction/config/a param "for later" | Don't — build only what the task needs now (YAGNI) |
 | Writing or growing a function with SRP signs (below) | Split into named phase functions |
 | Wrapping a function body in `if (ok) { … }` | Guard clause — bail early on the negative, keep the happy path flat |
+| Writing a loop nested inside another, esp. 3+ deep | Extract the inner loop into a named function — each level stays one job |
 | Tempted to add a boolean param | Split or enum/union (see below) |
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
@@ -75,6 +76,35 @@ def charge(order):
     capture(order)
 ```
 
+## Nested loops
+
+A loop nested inside another loop does two jobs — driving the outer collection *and* the inner work. Past two levels the body stops reading top-to-bottom and you track several index variables at once. Extract the inner loop into a named function so each level reads as one job.
+
+- **Extract the inner loop as named work**, not just its body: the outer loop calls `total_team(team)`; the helper owns `for member in team.members: …`.
+- **Two genuine dimensions can stay** when the shape is truly 2-D (a grid, a matrix) and the body is a line or two — a hop would only add noise. Three levels is the smell, always.
+- **Don't over-apply.** A short, flat inner loop that reads clearly isn't a violation — flag it at most. The trigger is depth *plus* a body you can't summarize in one phrase.
+
+```
+# NOT — three levels, every index live at once
+def total_company(departments):
+    grand = 0
+    for dept in departments:
+        for team in dept.teams:
+            for member in team.members:
+                grand += member.hours
+    return grand
+
+# extract each inner loop as named per-item work
+def total_company(departments):
+    return sum(total_department(dept) for dept in departments)
+
+def total_department(dept):
+    return sum(total_team(team) for team in dept.teams)
+
+def total_team(team):
+    return sum(member.hours for member in team.members)
+```
+
 ## Boolean parameters
 
 A new boolean flag parameter means the function grew a second behavior — an SRP violation. Decide case by case:
@@ -128,6 +158,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "Splitting it bloats the diff" | You're already modifying it — named phases review easier than a longer monolith. |
 | "We'll need this flexibility later" | Usually you won't, or you'll guess wrong. Add it when the need is real. |
 | "Single exit is cleaner" | One return buried in nested `if`s reads worse than guards that bail early up front. |
+| "It's just iterating, nesting is natural" | Past two levels you track every index at once. Extract the inner loop. |
 
 ## Red flags
 
@@ -136,6 +167,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - Review comment demanding extraction of code that appears only twice
 - Growing a new phase inside an already-staged function instead of splitting it
 - An `if` wrapping a whole function body, or an `else` immediately after a `return`
+- Three or more loops nested directly inside one another, or a loop body you can't summarize without "for each … and for each …"
 - A method call at the end of an `a.b.c.d` chain
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
