@@ -27,6 +27,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | Calling behavior through a property chain | Accept the collaborator directly |
 | A `get_`/`is_` query that also mutates, or a command you read a value from | Split: queries return and don't change; commands change and don't return |
 | Naming a function or a variable | Function/method = verb phrase (`send_receipt`); variable/field/param = noun phrase (`days_until_cutoff`); boolean = predicate (`is_active`) |
+| The same concept under several names (`get`/`fetch`/`load`) | One word per concept, one concept per word |
 | Tempted to write a comment | Rename/restructure until it's unneeded; comment only the naturally-complex why |
 
 ## Rule of Three
@@ -266,6 +267,23 @@ Naming does the explaining — a comment is a fallback, not a habit:
 
 Any helper you extract must itself obey every rule above — no `format_line(id, amount, date, compact, fmt)`.
 
+## One name per concept
+
+Use the same word for the same idea everywhere, and a different word only for a different idea. If `fetch`, `get`, and `load` all mean "read from the store" across the code, the reader keeps asking whether the difference is meaningful — consistency lets them stop wondering.
+
+- **One verb per operation.** Pick `fetch_*` for remote reads and use it throughout; don't scatter `get_`/`load_`/`retrieve_` for the identical action.
+- **One noun per thing.** The same concept stays `customer` everywhere — not `customer` here, `client` there, `user` elsewhere — unless they are genuinely distinct.
+- **Different word ⇒ different meaning.** The flip side: don't reuse one word for two ideas (`account` as both login and ledger). A shared word implies a shared concept that isn't there.
+- **Symmetry shows.** Parallel operations read in parallel — `open`/`close`, `start`/`stop`, not `open`/`finish`. A mismatched pair makes the reader check whether the asymmetry means something.
+
+```
+# NOT — one operation under three verbs
+fetch_user(id); get_order(id); load_invoice(id)
+
+# one verb for the one operation
+fetch_user(id); fetch_order(id); fetch_invoice(id)
+```
+
 ## Rationalizations
 
 | Excuse | Reality |
@@ -283,6 +301,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "The condition is right there, inline" | Right there and re-decoded every read. Name the predicate once. |
 | "Returning the value from the setter saves a call" | Now no one can read it without mutating. Split query from command. |
 | "Declaring everything up top is tidy" | It widens every variable's live range. Introduce each at first use. |
+| "Get and fetch are basically synonyms" | Then the reader keeps checking if you meant a difference. Pick one. |
 
 ## Red flags
 
@@ -298,6 +317,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - A method call at the end of an `a.b.c.d` chain
 - A `get_`/`is_`-named function with a side effect, or a value smuggled out of a state-changing command
 - Locals declared far above first use, or a `tmp`/`result` reassigned to an unrelated second meaning
+- The same operation or thing under several names (`get`/`fetch`/`load`), or one word covering two unrelated concepts
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
 - Refactoring functions your task didn't touch
