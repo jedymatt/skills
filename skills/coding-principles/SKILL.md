@@ -19,6 +19,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | Wrapping a function body in `if (ok) { … }` | Guard clause — bail early on the negative, keep the happy path flat |
 | Writing a loop nested inside another, esp. 3+ deep | Extract the inner loop into a named function — each level stays one job |
 | Writing a condition that negates a negative (`!is_invalid`, `not disabled`) | Flip to a positive predicate; one negative is the limit |
+| Writing a condition you have to decode (multi-clause, nested ternary) | Bind it to a named predicate (`can_post = …`) |
 | Tempted to add a boolean param | Split or enum/union (see below) |
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
@@ -151,6 +152,26 @@ if user.is_verified:
     grant_access()
 ```
 
+## Name complex conditions
+
+When a condition takes more than a glance to parse — several `and`/`or` terms, a comparison buried in a chain, a ternary inside a ternary — bind it to a named predicate. The reader then checks one intention-revealing name instead of re-deriving the logic each read.
+
+- **One predicate, one name.** `eligible_for_refund = order.paid and not order.shipped and within_window(order)`, then `if eligible_for_refund:`.
+- **No nested ternaries.** A ternary whose branches are themselves ternaries is write-only — expand it to named booleans or an `if`/`elif` ladder.
+- **The name states intent, not mechanics.** `is_quorum`, not `count_ge_half` — the reader wants *what it decides*, not how.
+- **Don't over-apply.** A single comparison (`if age >= 18`) is already clear; naming it `is_adult` is fine but not required. The trigger is a condition you have to *decode*, not merely read.
+
+```
+# NOT — three clauses to decode at the branch
+if user.age >= 18 and not user.banned and user.email_verified:
+    allow_post()
+
+# named predicate — the branch reads as intent
+can_post = user.age >= 18 and not user.banned and user.email_verified
+if can_post:
+    allow_post()
+```
+
 ## Boolean parameters
 
 A new boolean flag parameter means the function grew a second behavior — an SRP violation. Decide case by case:
@@ -207,6 +228,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "It's just iterating, nesting is natural" | Past two levels you track every index at once. Extract the inner loop. |
 | "`not is_not_done` is clear enough" | It's two flips to read. Name the positive predicate. |
 | "It's all one function's job" | One job can still mix altitudes. Name the low-level step and drop a level. |
+| "The condition is right there, inline" | Right there and re-decoded every read. Name the predicate once. |
 
 ## Red flags
 
@@ -218,6 +240,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - An `if` wrapping a whole function body, or an `else` immediately after a `return`
 - Three or more loops nested directly inside one another, or a loop body you can't summarize without "for each … and for each …"
 - A condition negating a negative — `not`/`!` over an `is_not_…`/`un…`/`dis…` name, or two negatives in one boolean expression
+- A multi-clause boolean or nested ternary evaluated inline in an `if`/`while`/`?:` instead of a named predicate
 - A method call at the end of an `a.b.c.d` chain
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
