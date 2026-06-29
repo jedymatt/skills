@@ -49,6 +49,7 @@ Several map to **coding-principles** — for those, the fix lives there.
 | Mysterious name | `d`, `tmp`, `handle2`, or a name that misleads | Rename to what it is |
 | Wide variable scope | Locals hoisted far from use, or one variable repurposed mid-function | Declare at first use; one name one meaning — coding-principles |
 | Inconsistent vocabulary | One concept under several names, or one name spanning two concepts | One word per concept — coding-principles |
+| Clever code | A trick or packed expression that must be mentally executed | Expand to obvious steps — coding-principles |
 | Part-of-speech mismatch | Function named as a noun, variable as a verb, boolean not a predicate | Verb for functions, noun for variables, predicate for booleans — coding-principles |
 | Double negative | A condition negates a negative name (`!is_invalid`) or stacks two negatives | Positive predicate; De Morgan — coding-principles |
 | Unnamed complex condition | A multi-clause boolean / nested ternary inline in a branch | Bind to a named predicate — coding-principles |
