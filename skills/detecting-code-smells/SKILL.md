@@ -47,6 +47,7 @@ Several map to **coding-principles** — for those, the fix lives there.
 | Dead code | Unreached branches, unused functions/vars | Delete it |
 | Inappropriate intimacy | Two units reach into each other's internals | Define a narrow interface between them |
 | Mysterious name | `d`, `tmp`, `handle2`, or a name that misleads | Rename to what it is |
+| Wide variable scope | Locals hoisted far from use, or one variable repurposed mid-function | Declare at first use; one name one meaning — coding-principles |
 | Part-of-speech mismatch | Function named as a noun, variable as a verb, boolean not a predicate | Verb for functions, noun for variables, predicate for booleans — coding-principles |
 | Double negative | A condition negates a negative name (`!is_invalid`) or stacks two negatives | Positive predicate; De Morgan — coding-principles |
 | Unnamed complex condition | A multi-clause boolean / nested ternary inline in a branch | Bind to a named predicate — coding-principles |

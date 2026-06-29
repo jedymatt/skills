@@ -23,6 +23,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | Tempted to add a boolean param | Split or enum/union (see below) |
 | 4+ positional params | Options object / keyword args, or rethink the design |
 | Meaningful inline literal | Named constant (`RETRY_DELAY_MS = 500`) |
+| Hoisting locals to the top, or reusing one variable for two meanings | Declare at first use; one variable, one meaning |
 | Calling behavior through a property chain | Accept the collaborator directly |
 | A `get_`/`is_` query that also mutates, or a command you read a value from | Split: queries return and don't change; commands change and don't return |
 | Naming a function or a variable | Function/method = verb phrase (`send_receipt`); variable/field/param = noun phrase (`days_until_cutoff`); boolean = predicate (`is_active`) |
@@ -196,6 +197,33 @@ Max 3 positional parameters — **every function, including private helpers you 
 
 Name every meaningful literal: `MAX_ATTEMPTS = 3`, not `attempt <= 3`. Exempt: 0, 1, -1 in obvious idioms. "Minimal diff" doesn't excuse inline literals on lines already being touched.
 
+## Variable scope
+
+Declare a variable as late as possible — right before its first use — and let it die once it's done. The fewer lines a value is *live*, the fewer things the reader holds in working memory at once.
+
+- **Late declaration.** Don't hoist a block of `let`s to the top of a function; introduce each where it's first needed, beside the code that gives it meaning.
+- **One variable, one meaning.** Never repurpose a `tmp`/`result`/`i` for a second, unrelated value — a name whose meaning changes mid-function is something the reader must re-learn. Use a fresh name.
+- **Narrow the live range.** A value used only inside one branch or loop is declared there, not in the enclosing scope.
+- **Don't over-apply.** A value genuinely used across the whole function belongs up top; this isn't a mandate to cram everything into one expression.
+
+```
+# NOT — hoisted, and `total` repurposed mid-function
+def summarize(orders):
+    total = 0
+    result = None
+    for o in orders: total += o.amount
+    result = total / len(orders)
+    total = max(o.amount for o in orders)   # `total` now means something else
+    return result, total
+
+# each value introduced at first use, one meaning each
+def summarize(orders):
+    amounts = [o.amount for o in orders]
+    average = sum(amounts) / len(amounts)
+    largest = max(amounts)
+    return average, largest
+```
+
 ## Coupling
 
 Depend on the narrowest thing that works.
@@ -254,6 +282,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 | "It's all one function's job" | One job can still mix altitudes. Name the low-level step and drop a level. |
 | "The condition is right there, inline" | Right there and re-decoded every read. Name the predicate once. |
 | "Returning the value from the setter saves a call" | Now no one can read it without mutating. Split query from command. |
+| "Declaring everything up top is tidy" | It widens every variable's live range. Introduce each at first use. |
 
 ## Red flags
 
@@ -268,6 +297,7 @@ Any helper you extract must itself obey every rule above — no `format_line(id,
 - A multi-clause boolean or nested ternary evaluated inline in an `if`/`while`/`?:` instead of a named predicate
 - A method call at the end of an `a.b.c.d` chain
 - A `get_`/`is_`-named function with a side effect, or a value smuggled out of a state-changing command
+- Locals declared far above first use, or a `tmp`/`result` reassigned to an unrelated second meaning
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
 - Refactoring functions your task didn't touch
