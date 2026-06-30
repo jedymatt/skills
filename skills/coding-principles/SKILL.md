@@ -1,6 +1,6 @@
 ---
 name: coding-principles
-description: Use when writing, modifying, refactoring, or reviewing code — especially when about to create or edit a code file, extract duplicated logic, add a parameter to an existing function, pass a true/false argument, inline a numeric literal, write an explanatory comment, reach through an object's internals, or add abstraction or configuration for a future need.
+description: Use when writing or changing code and second-guessing whether a choice is clean — the "is this fine?", "does this smell?", "leave it inline or refactor?", "how do I split this?" moments mid-coding. Covers per-function and per-file calls like a magic number or delay instead of a named constant; a boolean flag or 4th parameter; abstraction/config "for later"; a function growing long or mixing levels; reaching through an a.b.c.d chain; duplicating a block; a comment a better name would replace. Write-time judgment on code you're touching now — not auditing existing code for smells (detecting-code-smells), nor module/layer structure (architecting-principles).
 ---
 
 # Coding Principles
