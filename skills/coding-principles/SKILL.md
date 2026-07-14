@@ -291,7 +291,7 @@ fetch_user(id); fetch_order(id); fetch_invoice(id)
 Code is read far more often than written; optimize for the next reader, not for brevity or cleverness. A packed one-liner that has to be mentally executed costs more than the plain version it replaces. Spell out the steps.
 
 - **No write-only tricks.** A comprehension nested in a comprehension, bit-twiddling standing in for arithmetic, chained ternaries, leaning on truthiness quirks — if it must be decoded, expand it.
-- **Branch outside the sentence, not inside it.** A conditional spliced into a larger expression — a template string especially — stops the reader mid-token to evaluate it before they can finish the line. Lift the branch to the top so each side reads as one whole value. Repeating the surrounding text is cheaper to read than a fragment stitched around an inline `? :`.
+- **Branch around the whole expression, not inside it.** A conditional spliced into a larger expression — a template string, a function argument, an object literal, an arithmetic term — forces the reader to stop mid-expression and resolve it before they can read the rest as a whole. Lift the branch out so each side is one complete value. Repeating the surrounding expression is cheaper to read than a fragment stitched around an inline `? :`.
 - **Obvious beats short.** A few clear lines with a named intermediate beat one dense expression. Line count isn't the cost; decode time is.
 - **Clever needs a why.** If a non-obvious form is genuinely required (a measured hot path, a real constraint), keep it *and* comment the reason — the exception, not the habit.
 - **Don't over-apply.** Idiomatic, widely-read constructs aren't "clever": a list comprehension, a ternary for a simple default, ordinary standard-library use. The target is code that hides intent, not every concise expression.
@@ -307,7 +307,7 @@ return newest_first[:k]
 ```
 
 ```
-// NOT — the reader halts mid-sentence to resolve the ternary
+// NOT — a ternary wedged mid-expression; the reader halts to resolve it
 `Seeded ${n} experience${n === 1 ? '' : 's'} into ${org}`
 
 // branch around the whole value — each side reads straight through
@@ -335,7 +335,7 @@ n === 1
 | "Declaring everything up top is tidy" | It widens every variable's live range. Introduce each at first use. |
 | "Get and fetch are basically synonyms" | Then the reader keeps checking if you meant a difference. Pick one. |
 | "The one-liner is more elegant" | Elegant to write, slow to read. Optimize for the next reader. |
-| "The inline ternary only changes one word" | The reader still halts mid-sentence to prove that. Branch around the whole value. |
+| "The inline ternary only changes one word" | The reader still halts mid-expression to prove that. Branch around the whole value. |
 
 ## Red flags
 
