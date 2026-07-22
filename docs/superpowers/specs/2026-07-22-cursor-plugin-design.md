@@ -78,20 +78,25 @@ Two conflicts drive the design:
    Cursor's path is declared in its `plugin.json` `"hooks"` field. Fix: Cursor uses
    `hooks/hooks.cursor.json`, leaving Claude's `hooks/hooks.json` untouched.
 
-2. **No matching event.** Claude fires on `PreToolUse: Edit|Write`. Cursor has **no
-   "before edit" hook** — its events are `beforeSubmitPrompt`, `afterFileEdit`,
-   `beforeShellExecution`, `stop`, etc.
+2. **Injection point differs.** Claude fires on `PreToolUse: Edit|Write` and injects via
+   `additionalContext`. In Cursor, `preToolUse` output only supports `permission`/`deny`
+   (its `agent_message` reaches the agent *only when the edit is blocked*), so it cannot
+   inject a non-blocking reminder. The event whose output supports context injection is
+   **`sessionStart`**, via its `additional_context` output field ("added to the
+   conversation's initial system context").
 
-**Mapping:** use **`beforeSubmitPrompt`** to inject the same reminder once per session on
-the first prompt. Rationale: it nudges *before* the agent works and reliably fires in the
-Cursor CLI. Trade-off: it loses the "only on a code file" filter (a prompt is not tied to a
-file). Alternative `afterFileEdit` keeps the filter but fires *after* the edit and may not
-support injecting agent-visible text — not chosen.
+**Mapping:** use **`sessionStart`** to inject the same reminder once at session start via
+`additional_context`. Rationale: guaranteed to fire exactly once per session, non-blocking
+by nature, fires in the Cursor CLI, and needs no tool-name matcher or dedup marker.
+Trade-off: it loses the "only on a code file" filter (session start is not tied to a file),
+which is acceptable — the reminder text is already conditional ("if you are about to create
+or modify code…").
 
-`hooks/remind-coding-skills.cursor.sh` is a rewrite of the Claude script: different stdin
-fields, different output JSON, `${CURSOR_PLUGIN_ROOT}` instead of `${CLAUDE_PLUGIN_ROOT}`,
-same once-per-session dedup and same reminder text. Fail-open like the original (any error
-or unmet condition does nothing, never blocks).
+`hooks/remind-coding-skills.cursor.sh` is a small rewrite of the Claude script: it drains
+stdin (the `sessionStart` payload is not needed), then emits `{"additional_context": "…"}`
+with the same reminder text. No `jq` dependency (the payload is static). Fail-open: it can
+only ever print the reminder or nothing, never blocks. The hook is wired via
+`hooks/hooks.cursor.json` using `${CURSOR_PLUGIN_ROOT}`.
 
 ### Manifests
 - `.cursor-plugin/plugin.json`: kebab-case `name` (`jedymatt-skills`), `version`,
@@ -104,8 +109,8 @@ No rules (`.mdc`), subagents, MCP servers, or commands. The repo has none, and s
 the need. Just skills + the one hook.
 
 ## Open items (verify during implementation, not blocking)
-- Exact `beforeSubmitPrompt` stdin/stdout schema.
-- Whether the hook fires identically in Cursor CLI vs editor.
+- Whether the `sessionStart` hook fires identically in Cursor CLI vs editor (schema
+  confirmed; runtime behavior to confirm on install).
 - Whether a single-plugin-at-root `source: "."` is accepted, or Cursor prefers a plugin
   subdirectory.
 
