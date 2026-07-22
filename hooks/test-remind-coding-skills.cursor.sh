@@ -13,11 +13,12 @@ assert_contains() {
   esac
 }
 
-# 1: sessionStart payload → reminder with both skills
-out="$(printf '%s' '{"session_id":"sess-A","is_background_agent":false,"composer_mode":"agent"}' | run)"
+# 1: sessionStart payload → reminder with both skills, exit 0
+out="$(printf '%s' '{"session_id":"sess-A","is_background_agent":false,"composer_mode":"agent"}' | run)"; rc=$?
 assert_contains "$out" "coding-principles" "sessionStart emits coding-principles reminder"
 assert_contains "$out" "architecting-principles" "reminder mentions architecting-principles"
 assert_contains "$out" "additional_context" "output uses additional_context field"
+[ "$rc" -eq 0 ] && echo "PASS: valid payload exits 0" || { echo "FAIL: valid payload exit code $rc"; fail=1; }
 
 # 2: output is valid JSON
 if printf '%s' "$out" | jq -e . >/dev/null 2>&1; then echo "PASS: output is valid JSON"; else

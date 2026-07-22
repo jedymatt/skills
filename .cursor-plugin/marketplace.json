@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "jedymatt-skills",
-      "source": ".",
+      "source": "./",
       "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, git-town (with PR stacking), handoff/load-handoff, and writing-plain-english."
     }
   ]

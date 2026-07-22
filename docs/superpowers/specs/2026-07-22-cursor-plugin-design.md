@@ -30,7 +30,7 @@ Cursor's plugin format (verified against the official `cursor/plugins` repo) is 
 | `.claude-plugin/plugin.json` | `.cursor-plugin/plugin.json` | rename + tweak fields |
 | `.claude-plugin/marketplace.json` | `.cursor-plugin/marketplace.json` | near-identical |
 | `skills/<name>/SKILL.md` | `skills/<name>/SKILL.md` | **same format — shared** |
-| `hooks/hooks.json` (Claude schema) | `hooks/hooks.json` (Cursor schema) | **real translation** |
+| `hooks/hooks.json` (Claude schema) | `hooks/hooks.cursor.json` (Cursor schema) | **real translation** |
 | `${CLAUDE_PLUGIN_ROOT}` | `${CURSOR_PLUGIN_ROOT}` | rename |
 
 Cursor skills use the same `name` + `description` frontmatter as Anthropic skills

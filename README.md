@@ -50,8 +50,8 @@ This repo is also a Claude Code [plugin marketplace](https://code.claude.com/doc
 
 ## Use in Cursor
 
-This repo doubles as a **Cursor plugin**. The same 8 skills work in Cursor unchanged
-(Cursor reads the same `skills/<name>/SKILL.md` format), plus a `sessionStart` hook that
+This repo doubles as a **Cursor plugin**. Cursor reads the same `skills/<name>/SKILL.md`
+format, so all 8 skills work there unchanged. It also adds a `sessionStart` hook that
 reminds the agent to use `coding-principles` / `architecting-principles`.
 
 - Cursor manifest: `.cursor-plugin/plugin.json`
@@ -59,8 +59,8 @@ reminds the agent to use `coding-principles` / `architecting-principles`.
 - Cursor hook: `hooks/hooks.cursor.json` → `hooks/remind-coding-skills.cursor.sh`
 
 Install it from the Cursor marketplace, or point Cursor at this repo. The Claude Code
-plugin (`.claude-plugin/`, `hooks/hooks.json`) is unaffected — both tools read their own
-manifests from the same repo and share the `skills/` folder.
+plugin still works the same way — this release only bumps its version. Both tools read
+their own manifests from the same repo and share the `skills/` folder.
 
 ## Manage
 
