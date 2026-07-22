@@ -1,6 +1,6 @@
 {
   "name": "jedymatt-skills",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "jedymatt's personal Claude Code skills: coding-principles, architecting-principles, detecting-code-smells, git-town (with PR stacking), handoff/load-handoff, and writing-plain-english.",
   "author": {
     "name": "jedymatt"
