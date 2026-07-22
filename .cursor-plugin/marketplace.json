@@ -1,0 +1,17 @@
+{
+  "name": "jedymatt",
+  "owner": {
+    "name": "jedymatt",
+    "url": "https://github.com/jedymatt"
+  },
+  "metadata": {
+    "description": "jedymatt's personal Cursor plugin: coding/architecting principles, code-smell detection, git-town workflows, session handoff, and plain-English writing."
+  },
+  "plugins": [
+    {
+      "name": "jedymatt-skills",
+      "source": ".",
+      "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, git-town (with PR stacking), handoff/load-handoff, and writing-plain-english."
+    }
+  ]
+}
