@@ -4,3 +4,6 @@
 # `npx skills` install artifacts (this is the source repo; these are consumer-side)
 .agents/
 skills-lock.json
+
+# superpowers subagent-driven-development scratch (task briefs, reports, review diffs)
+.superpowers/

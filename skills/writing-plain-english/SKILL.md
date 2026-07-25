@@ -59,15 +59,6 @@ A starting point, not a limit: when a simpler everyday word exists, use it.
 **Fancy:** I also started reviewing the dedup logic more broadly to make sure there aren't other edge cases lurking.
 **Plain:** I also started looking at the dedup logic to check for other cases I might have missed.
 
-## Defining Hard Words
-
-If a rare word or phrase is unavoidable, add a short block right after the paragraph that defines it in plain English — one term per line. The headline is fixed: `📘 Word help`. Use the box-drawing `─` (not hyphens, which markdown turns into a rule). Keep dividers short, and make the top and bottom lines different lengths so the block stays quiet. Wrap both divider lines in backticks so they render muted:
-
-`📘 Word help ─────────`
-**leverage** — to use something to get an advantage.
-**race condition** — a bug where the result depends on timing.
-`─────────────────────`
-
 ## Self-Check Before Sending
 
 - Any word from the Fancy column? Swap it.

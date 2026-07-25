@@ -30,6 +30,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 | The same concept under several names (`get`/`fetch`/`load`) | One word per concept, one concept per word |
 | Tempted to write a comment | Rename/restructure until it's unneeded; comment only the naturally-complex why |
 | Reaching for a clever one-liner or trick | Write the obvious version; decode time costs more than length |
+| A conditional wedged mid-expression (`experience${n === 1 ? '' : 's'}`) | Lift the branch to the top; give each side a whole, readable value |
 
 ## Rule of Three
 
@@ -290,6 +291,7 @@ fetch_user(id); fetch_order(id); fetch_invoice(id)
 Code is read far more often than written; optimize for the next reader, not for brevity or cleverness. A packed one-liner that has to be mentally executed costs more than the plain version it replaces. Spell out the steps.
 
 - **No write-only tricks.** A comprehension nested in a comprehension, bit-twiddling standing in for arithmetic, chained ternaries, leaning on truthiness quirks — if it must be decoded, expand it.
+- **Branch around the whole expression, not inside it.** A conditional spliced into a larger expression — a template string, a function argument, an object literal, an arithmetic term — forces the reader to stop mid-expression and resolve it before they can read the rest as a whole. Lift the branch out so each side is one complete value. Repeating the surrounding expression is cheaper to read than a fragment stitched around an inline `? :`.
 - **Obvious beats short.** A few clear lines with a named intermediate beat one dense expression. Line count isn't the cost; decode time is.
 - **Clever needs a why.** If a non-obvious form is genuinely required (a measured hot path, a real constraint), keep it *and* comment the reason — the exception, not the habit.
 - **Don't over-apply.** Idiomatic, widely-read constructs aren't "clever": a list comprehension, a ternary for a simple default, ordinary standard-library use. The target is code that hides intent, not every concise expression.
@@ -302,6 +304,16 @@ return [x for s in data for x in (s or [])][::-1][:k]
 flattened = [x for s in data for x in (s or [])]
 newest_first = list(reversed(flattened))
 return newest_first[:k]
+```
+
+```
+// NOT — a ternary wedged mid-expression; the reader halts to resolve it
+`Seeded ${n} experience${n === 1 ? '' : 's'} into ${org}`
+
+// branch around the whole value — each side reads straight through
+n === 1
+  ? `Seeded ${n} experience into ${org}`
+  : `Seeded ${n} experiences into ${org}`
 ```
 
 ## Rationalizations
@@ -323,6 +335,7 @@ return newest_first[:k]
 | "Declaring everything up top is tidy" | It widens every variable's live range. Introduce each at first use. |
 | "Get and fetch are basically synonyms" | Then the reader keeps checking if you meant a difference. Pick one. |
 | "The one-liner is more elegant" | Elegant to write, slow to read. Optimize for the next reader. |
+| "The inline ternary only changes one word" | The reader still halts mid-expression to prove that. Branch around the whole value. |
 
 ## Red flags
 
@@ -340,6 +353,7 @@ return newest_first[:k]
 - Locals declared far above first use, or a `tmp`/`result` reassigned to an unrelated second meaning
 - The same operation or thing under several names (`get`/`fetch`/`load`), or one word covering two unrelated concepts
 - A packed expression (nested comprehension, chained ternary, bit-twiddle) that must be mentally executed to understand
+- A conditional interpolated inside a string or larger expression (`` `…${n === 1 ? '' : 's'}…` ``) instead of branching around the whole value
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
 - Refactoring functions your task didn't touch
