@@ -1,110 +1,112 @@
 # Git Town Configuration Reference
 
+> Verified against **Git Town 24.0.0**. Defaults change between majors — `git town config` prints the live, authoritative values for the current repo. Prefer it over trusting the tables below.
+>
+> **On v23?** Only two things here differ: secrets print by default (`--redact` hides them, rather than `--show-secrets` revealing them), and Bitbucket uses `bitbucket-app-password` instead of `bitbucket-api-token`. Every setting name, default, and the precedence order below are identical in v23 and v24. On **v22 or older** the precedence order was different — v23 introduced the ordering shown below, so check the docs for your version.
+
 ## Setup
 
 ```bash
 git town init                        # interactive setup (recommended first run)
-git town config                      # view current config
-git town config --redact             # hide tokens in output
+git town config                      # view current config (secrets redacted)
+git town config --show-secrets       # reveal tokens
 git town config remove               # remove all git-town config
 git town config get-parent [branch]  # get parent of branch
 ```
 
 ## Configuration Precedence
 
-1. **Environment variables** — highest (`GIT_TOWN_<PREFERENCE>=<value>`)
-2. **Local repo git metadata** — `git config git-town.<pref> <value>`
-3. **Global user git metadata** — `git config --global git-town.<pref> <value>`
-4. **Config file** — lowest (`git-town.toml`, `.git-town.toml`, or `.git-branches.toml`)
+Highest to lowest:
+
+1. **CLI flags**
+2. **Git metadata** — `git config git-town.<key> <value>` (local overrides global)
+3. **Config file** — `git-town.toml`, `.git-town.toml`, or `.git-branches.toml`
+4. **Environment variables** — `GIT_TOWN_<PREFERENCE>=<value>`
+5. **System-specific settings**
+6. **Defaults**
+
+> Env vars rank *below* the config file, not above it. This was reordered in v23.
 
 ## Config File Format (git-town.toml)
 
+The official v24 template — values shown are the defaults unless noted:
+
 ```toml
 [branches]
-main = "main"
-perennials = ["staging", "production"]
-perennial-regex = "release-.*"
+main = ""                     # must be set by the user
 contribution-regex = ""
-observed-regex = ""
+default-type = "feature"      # type assigned to branches with no recorded type
 feature-regex = ""
+observed-regex = ""
+perennial-regex = ""
+perennials = []
 
 [create]
-new-branch-type = "feature"          # feature | prototype
-share-new-branches = false
-# branch-prefix = "user/"            # prefix for new branch names
+branch-prefix = ""
+new-branch-type = "feature"
+share-new-branches = "no"     # no | push | propose  (a string, not a boolean)
 
 [hosting]
-platform = "github"                  # github | gitlab | gitea | forgejo | bitbucket
-# origin-hostname = "github.com"     # custom hostname for SSH
-# dev-remote = "origin"
+dev-remote = "origin"
+origin-hostname = ""          # use the hostname in the origin URL
+forge-type = ""               # auto-detect
+
+[propose]
+breadcrumb = "none"           # none | branches | stacks
+breadcrumb-direction = "down" # down | up
 
 [ship]
-strategy = "api"                     # api | always-merge | fast-forward | squash-merge
-delete-tracking-branch = false
+delete-tracking-branch = true
+strategy = "api"
 
 [sync]
-feature-strategy = "merge"           # merge | rebase | compress
-perennial-strategy = "ff-only"       # ff-only | merge | rebase
-prototype-strategy = "rebase"        # merge | rebase | compress
-push-branches = true
-tags = false
-upstream = false
-auto = true
-run-detached = false
+auto-sync = true
+feature-strategy = "merge"
+perennial-strategy = "rebase"
+prototype-strategy = "rebase" # sample value; when unset it follows feature-strategy
+push-hook = true
+tags = true
+upstream = true
 ```
-
-## Branch Configuration
-
-| Setting | Type | Description |
-|---------|------|-------------|
-| `branches.main` | string | Main development branch (default: "main") |
-| `branches.perennials` | list | Long-lived branches (staging, prod, etc.) |
-| `branches.perennial-regex` | regex | Auto-classify perennial branches |
-| `branches.contribution-regex` | regex | Auto-classify contribution branches |
-| `branches.observed-regex` | regex | Auto-classify observed branches |
-| `branches.feature-regex` | regex | Auto-classify feature branches |
-
-## Create Settings
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `create.new-branch-type` | feature | Default type for hack/append/prepend |
-| `create.share-new-branches` | false | Push new branches immediately |
-| `create.branch-prefix` | (none) | Prefix for new branch names |
 
 ## Sync Strategies
 
-### Feature Sync (sync.feature-strategy)
+### Feature (`sync.feature-strategy`)
 
 | Strategy | Behavior |
 |----------|----------|
 | **merge** (default) | Merge parent into feature branch. Safest option. |
 | **rebase** | Rebase feature onto parent. Force-pushes with `--force-with-lease --force-if-includes`. |
-| **compress** | Merge + compress into single commit. More merge conflicts in multi-user environments. |
+| **compress** | Merge tracking + parent, then compress the branch to one commit. More conflicts in multi-user environments. |
 
-### Perennial Sync (sync.perennial-strategy)
+### Perennial (`sync.perennial-strategy`)
 
 | Strategy | Behavior |
 |----------|----------|
-| **ff-only** (default) | Fast-forward only |
-| **merge** | Allow merge commits |
-| **rebase** | Rebase onto origin |
+| **rebase** (default) | Rebase local perennial branches onto their tracking branch. |
+| **ff-only** | Fast-forward only; errors if a fast-forward isn't possible. |
 
-### Prototype Sync (sync.prototype-strategy)
+Only these two values are accepted — `merge` is **not** valid here.
 
-Same options as feature sync. Default: **rebase**.
+### Prototype (`sync.prototype-strategy`)
+
+Accepts the same values as feature sync. When unset it falls back to `sync.feature-strategy` (so `merge` by default).
 
 ### Other Sync Settings
 
 | Setting | Default | Description |
 |---------|---------|-------------|
-| `sync.push-branches` | true | Push after sync |
-| `sync.tags` | false | Sync tags with remote |
-| `sync.upstream` | false | Sync with upstream remote |
-| `sync.auto` | true | Auto-sync on branch create commands |
-| `sync.run-detached` | false | Don't update perennial root during sync |
+| `sync.auto-sync` | true | Auto-sync on branch-creating commands |
+| `sync.push-hook` | true | Run Git's pre-push hook when pushing |
+| `sync.tags` | true | Sync tags with remote |
+| `sync.upstream` | true | Sync with upstream remote |
+| `sync.push-branches` | true | Push branches during sync |
+| `sync.auto-resolve` | true | Auto-resolve phantom merge conflicts |
+| `sync.detached` | false | Don't update the perennial root during sync (git key: `git-town.detached`) |
 
-## Ship Strategies (ship.strategy)
+The last three are valid `[sync]` keys but are absent from the template `git town init` generates.
+
+## Ship Strategies (`ship.strategy`)
 
 | Strategy | Behavior | When to use |
 |----------|----------|-------------|
@@ -113,50 +115,77 @@ Same options as feature sync. Default: **rebase**.
 | **fast-forward** | Fast-forward parent to contain branch commits | Stacked changes (avoids false conflicts) |
 | **squash-merge** | Squash all commits into one | Clean single-commit history |
 
-**Other ship settings:**
-
-| Setting | Default | Description |
-|---------|---------|-------------|
-| `ship.delete-tracking-branch` | false | Delete remote branch after ship |
+`ship.delete-tracking-branch` defaults to **true** — the remote branch is removed after shipping.
 
 ## Forge Integration
 
-| Platform | Token Setting | Notes |
-|----------|---------------|-------|
-| GitHub | `github.token` | Or use GitHub CLI (`gh auth`) |
-| GitLab | `gitlab.token` | Personal access token |
-| Gitea | `gitea.token` | Personal access token |
-| Forgejo | `forgejo.token` | Personal access token |
-| Bitbucket | `bitbucket.username` + `bitbucket.app-password` | App password required |
+Set the forge with `hosting.forge-type` (auto-detected from the remote URL when empty). Valid values: `github`, `gitlab`, `gitea`, `forgejo`, `bitbucket`, `bitbucket-datacenter`, `azuredevops` (experimental).
 
-Set platform: `hosting.platform = "github"` (or auto-detected from remote URL).
+> Named `hosting.platform` until v18.1. The old name still works — Git Town reads it and **rewrites your config to the new name**, so don't be surprised when `hosting-platform` turns into `forge-type` on disk. Several deprecated keys migrate this way.
 
-Set token via git config (**ask the user before running global config commands**):
+### Connectors
+
+GitHub and GitLab can be reached either through their API (needs a token) or through their official CLI (handles auth for you):
+
+```toml
+[hosting]
+github-connector = "gh"      # api | gh
+gitlab-connector = "glab"    # api | glab
+```
+
+Hardcoding a connector in the config file enforces CLI usage (or non-usage) for the whole team — prefer setting it in git metadata.
+
+### Tokens
+
+| Platform | Setting |
+|----------|---------|
+| GitHub | `github-token` (or use `gh` connector) |
+| GitLab | `gitlab-token` (or use `glab` connector) |
+| Gitea | `gitea-token` |
+| Forgejo | `forgejo-token` |
+| Bitbucket | `bitbucket-username` + `bitbucket-api-token` (**v23 and older:** `bitbucket-app-password`) |
+
+Git stores tokens in plaintext by default; consider a credential helper backed by your OS keychain.
+
 ```bash
 # WARNING: --global affects ALL repos. Ask the user for permission first.
 git config --global git-town.github-token <token>
 ```
 
-Or environment variable:
-```bash
-export GIT_TOWN_GITHUB_TOKEN=<token>
-```
+Or via environment variable: `export GIT_TOWN_GITHUB_TOKEN=<token>`
 
 > Branch-type sync/push behavior: see the Branch Types table in `SKILL.md`.
 
-## Setting Config via Git
+## Setting Config via Git Metadata
+
+**The git-metadata key is not always the TOML path with dashes.** Unknown keys are stored by Git and silently ignored by Git Town, so a wrong name looks exactly like success. Verified mappings:
+
+| TOML | Git metadata key |
+|------|------------------|
+| `[branches] main` | `git-town.main-branch` |
+| `[branches] default-type` | `git-town.unknown-branch-type` |
+| `[create] new-branch-type` | `git-town.new-branch-type` (**not** `create-new-branch-type`) |
+| `[create] share-new-branches` | `git-town.share-new-branches` |
+| `[sync] auto-sync` | `git-town.auto-sync` (**not** `sync-auto-sync`) |
+| `[sync] feature-strategy` | `git-town.sync-feature-strategy` |
+| `[sync] tags` | `git-town.sync-tags` |
+| `[ship] strategy` | `git-town.ship-strategy` |
+| `[hosting] forge-type` | `git-town.forge-type` |
+| `[propose] breadcrumb` | `git-town.proposal-breadcrumb` (**proposal-**, not `propose-`) |
 
 ```bash
 # Local repo
 git config git-town.sync-feature-strategy rebase
 git config git-town.ship-strategy squash-merge
-git config git-town.create-new-branch-type prototype
+git config git-town.new-branch-type prototype
 
 # Global (all repos)
 # WARNING: --global affects ALL repos on this machine. MUST ask user before running.
 git config --global git-town.github-token <token>
-git config --global git-town.hosting-platform github
+git config --global git-town.forge-type github
 
-# Environment variable (highest precedence)
+# Environment variable (ranks below the config file)
 export GIT_TOWN_SYNC_FEATURE_STRATEGY=rebase
 ```
+
+**Verify any change took effect with `git town config`** — that is the only way to tell a valid key from a typo.

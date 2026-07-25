@@ -43,7 +43,7 @@ git town propose -t "Add auth" -b "Implements OAuth2"
 
 ---
 
-> Stacking commands — `append`, `prepend`, `commit --up`, `swap`, `detach`, `set-parent`, `up`/`down`, `walk` — are in the **stacking-prs** skill.
+> Stacking commands — `append`, `prepend`, `commit --up`, `swap`, `detach`, `combine`, `diff-parent`, `set-parent`, `up`/`down`, `walk` — are in the **stacking-prs** skill.
 
 ## Branch Type Commands
 
@@ -84,9 +84,10 @@ git town undo
 Merge a completed branch into its parent/main and remove it. Most people use the forge UI instead; `ship` is mainly for offline work or stacks. Strategies are set via `ship.strategy` — see `reference/configuration.md`.
 ```bash
 git town ship                        # ship current branch to main
-git town ship --to-parent            # ship into a non-main parent (stacks)
+git town ship --to-parent            # ship into a non-perennial parent (stacks)
 git town ship feature-1 -m "Add auth module"
 ```
+**v24 changed message handling.** Under the default `api` strategy the forge supplies the commit message; `ship` no longer opens an editor (pass `--enter-message` to get it back). With `-m`, the first line becomes the subject and the rest the body. On **v23**, `ship` opens an editor by default and `-m` takes the whole string as the message.
 
 ### compress
 Squash all commits on a branch into one (first commit's message by default).
@@ -96,7 +97,7 @@ git town compress --stack            # every branch in the stack
 ```
 
 ### delete
-Remove a branch locally and remotely; child branches are reparented to its parent.
+Remove one or more branches locally and remotely. Child branches are reparented to the deleted branch's parent, their proposals are retargeted, and the deleted branch's commits are removed from descendants (except under the `merge` sync strategy).
 
 ### rename
 Rename a branch and its tracking branch; updates associated PRs. `--force` for perennial branches.
@@ -112,6 +113,6 @@ Show the branch hierarchy tree.
 ## Setup
 
 - `git town init` — interactive setup assistant (run on first use).
-- `git town config` — view config; `--redact` hides tokens; `config remove` clears it; `config get-parent [branch]`.
+- `git town config` — view config; secrets are redacted by default, `--show-secrets` reveals them (on **v23** it is the reverse: secrets print by default and `--redact` hides them); `config remove` clears it; `config get-parent [branch]`.
 - `git town offline [yes|no]` — toggle offline mode.
 - `git town completions [bash|zsh|fish|powershell]` — shell completions.

@@ -30,18 +30,21 @@ A stack is a chain of dependent branches — each the child of the one before �
 |---|---|
 | `append <name>` | New branch as a child of the current one |
 | `prepend <name>` | Insert a new branch between current and its parent |
-| `commit --up=<n>` | Commit into the n-th ancestor (`1` = parent), then sync down |
+| `commit --up=<n>` | Commit **staged** changes into the n-th ancestor (`1` = parent), then sync them back down |
 | `sync --stack` | Sync every branch in the stack |
 | `propose --stack` | Open a PR for each branch in the stack |
-| `ship` / `ship --to-parent` | Ship the bottom branch to main / ship into a non-main parent |
-| `up` / `down` | Move to a child / to the parent |
+| `ship` / `ship --to-parent` | Ship the bottom branch to main / ship into a non-perennial parent |
+| `up` / `down` | `up` → **parent** (toward main); `down` → **child** (toward the tip) |
 | `swap` | Swap the current branch's position with its parent |
 | `detach` | Pop the current branch out of the stack (it then ships to main) |
-| `set-parent` | Reparent a branch (and its children); `--none` makes it independent |
-| `merge` | Merge the current branch into its parent, then delete it |
-| `walk <cmd>` | Run a command on each branch in the stack |
+| `set-parent` | Reparent a branch (and its children); `--none` removes the parent, making it **perennial** |
+| `combine` | Fold the current branch into its parent — the two become one branch (**v23: `merge`**) |
+| `diff-parent [<branch>]` | Show the changes a branch adds on top of its parent |
+| `walk --stack <cmd>` | Run a command on each branch in the stack (`--all` = every local feature branch) |
 
 Full flags: `git town <cmd> --help`.
+
+**Phantom conflicts:** stack operations auto-resolve them by default — `append`, `prepend`, `sync`, `propose`, `set-parent`, `swap` all take `--auto-resolve`/`--no-auto-resolve`. `ship` does not.
 
 ## Workflow
 
@@ -54,11 +57,22 @@ git town sync --stack              # sync the whole stack
 git town propose --stack           # one PR per branch
 ```
 
-Fix something lower in the stack without leaving your branch:
+Fix something lower in the stack without leaving your branch (stage the changes first):
 
 ```bash
-git town commit --up=1 -m "Fix in parent"   # commit into parent, then sync children down
+git add -p
+git town commit --up=1 -m "Fix in parent"   # commit into parent, then sync it back down
 ```
+
+**Stack breadcrumbs:** embed a map of the stack in each PR description so reviewers can navigate it. Off by default.
+
+```toml
+[propose]
+breadcrumb = "stacks"        # none (default) | branches | stacks
+breadcrumb-direction = "down"  # down (default) | up
+```
+
+Via git metadata the key is `git-town.proposal-breadcrumb` — note **proposal-**, not `propose-`; the wrong name is accepted silently and does nothing.
 
 ## Shipping a Stack
 
@@ -70,6 +84,9 @@ git town commit --up=1 -m "Fix in parent"   # commit into parent, then sync chil
 
 - **Forgetting `--stack`** on `sync`/`propose` — without it they only touch the current branch.
 - **Shipping out of order** — shipping a child before its parent. Ship the bottom first, or use `--to-parent`.
+- **Getting `up`/`down` backwards** — v23 swapped them: `up` goes to the **parent**, `down` to the **child**. Both succeed silently on the wrong branch, so verify with `git town branch`. (On v22 or older they are reversed.)
+- **Using the wrong name for `combine`** — it was `git town merge` through v23 and renamed in v24. Whichever name doesn't match your version errors out; check `git town --version`.
+- **`set-parent --none` to "detach"** — that makes the branch *perennial* (long-lived, never shipped). To pop a branch out of a stack and still ship it to main, use `detach`.
 - **`git rebase` instead of `git town sync`** — breaks lineage tracking.
 - **`git branch -d` instead of `git town delete`** — orphans the lineage metadata.
 - **Stacks too deep** — long chains are painful to review and rebase. Keep them short.
