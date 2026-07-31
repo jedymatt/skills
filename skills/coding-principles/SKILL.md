@@ -267,6 +267,8 @@ Naming does the explaining — a comment is a fallback, not a habit:
 - Doc-banners and section markers aren't documentation — they're the SRP sign above.
 - Naturally complex logic (domain quirk, non-obvious invariant, why-not-the-obvious-way) gets a comment when genuinely needed — explaining **why**, not what.
 
+Cleaning up comments that are already there is a separate pass — see **pruning-comments**.
+
 Any helper you extract must itself obey every rule above — no `format_line(id, amount, date, compact, fmt)`.
 
 ## One name per concept

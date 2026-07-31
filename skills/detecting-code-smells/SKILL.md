@@ -36,7 +36,7 @@ Several map to **coding-principles** — for those, the fix lives there.
 | Side-effecting query | A `get_`/`is_` function mutates state, or a command returns data to read | Split command from query — coding-principles |
 | Premature abstraction | Layer/config/param with one or hypothetical caller | Inline it; wait for a real need — coding-principles |
 | Premature DRY | Extraction of logic seen only twice | Leave WET until the 3rd use — coding-principles |
-| Redundant comment | Comment paraphrases the adjacent name/code | Delete it; rename instead — coding-principles |
+| Redundant comment | Comment paraphrases the adjacent name/code | Delete it; rename instead — pruning-comments |
 | Long method | Many lines / responsibilities regardless of phases | Extract sub-steps |
 | Large class / god object | One type holds many unrelated jobs or fields | Split by responsibility |
 | Feature envy | A method uses another object's data more than its own | Move the method to that object |
