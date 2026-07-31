@@ -7,7 +7,9 @@ description: Use when creating a feature branch, switching branches, syncing a b
 
 ## Overview
 
-Git Town (v23+) is a high-level Git CLI that automates branch creation, syncing, and shipping, and tracks a branch lineage tree. Install: `brew install git-town`. Setup: `git town init`.
+Git Town is a high-level Git CLI that automates branch creation, syncing, and shipping, and tracks a branch lineage tree. Install: `brew install git-town`. Setup: `git town init`.
+
+Commands below are for **v24**. If the repo is on v23, see [Version Differences](#version-differences) — five things changed.
 
 **Stacking PRs (dependent branches)?** Use the **stacking-prs** skill — `append`, `prepend`, whole-stack sync/propose, and stack shipping live there.
 
@@ -34,11 +36,11 @@ Git Town (v23+) is a high-level Git CLI that automates branch creation, syncing,
 | `continue` | Resume after conflict | |
 | `skip` | Skip branch | `--park` |
 | `undo` | Revert last command | |
-| `status` | Show state | `--pending` |
+| `status` | Show state | `--pending`, `reset`, `show` |
 | `branch` | Show hierarchy | |
-| `config` | View/update config | `--redact` |
+| `config` | View config | `--show-secrets` (v23: `--redact`) |
 
-Stacking commands (`append`, `prepend`, `commit --up`, `sync --stack`, `propose --stack`, `ship --to-parent`, `up`/`down`, `swap`, `detach`, `set-parent`, `walk`) are in **stacking-prs**.
+Stacking commands (`append`, `prepend`, `commit --up`, `sync --stack`, `propose --stack`, `ship --to-parent`, `up`/`down`, `swap`, `detach`, `combine`, `diff-parent`, `set-parent`, `walk`) are in **stacking-prs**.
 
 ## Common Workflows
 
@@ -74,14 +76,31 @@ git town ship                      # ships current branch to main
 - **Conflict during sync/ship:** resolve conflicts, then `git town continue`
 - **Skip problematic branch:** `git town skip` (add `--park` to also park it)
 - **Undo last command:** `git town undo`
-- **Check state:** `git town status` (`--pending` for shell prompts)
+- **Abort but keep the work done so far:** `git town status reset`
+- **Check state:** `git town status` (`--pending` for shell prompts, `show` for full detail)
 - **View history:** `git town runlog`
+
+**Phantom conflicts** — conflicts caused by changes already present in an ancestor — are auto-resolved by default on `hack`, `append`, `prepend`, `sync`, `propose`, `set-parent`, and `swap`. Pass `--no-auto-resolve` to handle them yourself. (`ship` has no such flag.)
 
 ## Common Mistakes
 
 - **MUST ask the user before running any `git config --global` command** — global config affects ALL repositories on the machine, not just the current one
 - Using `git rebase` instead of `git town sync` — breaks lineage tracking
 - Running `git branch -d` instead of `git town delete` — orphans lineage metadata
+
+## Version Differences
+
+This skill documents **v24**. Check with `git town --version` before relying on the items below — they are the only things that differ between v23 and v24. Everything else in this skill applies to both.
+
+| Task | v23 | v24 |
+|------|-----|-----|
+| Fold a branch into its parent | `git town merge` | `git town combine` |
+| Show secrets in config output | shown by default; `--redact` hides them | redacted by default; `--show-secrets` reveals them |
+| `ship` commit message (api strategy) | opens an editor | uses the forge's own message; `--enter-message` restores the editor |
+| `ship -m "..."` | whole string is the message | first line = subject, rest = body (like `git commit -m`) |
+| Bitbucket auth | `bitbucket-app-password` | `bitbucket-api-token` (app passwords no longer work) |
+
+**On v22 or older?** `up` and `down` are *reversed* from what **stacking-prs** documents — v23 swapped them so `up` goes to the parent. Config precedence also differed: v23 introduced the order in `reference/configuration.md`.
 
 ## Reference
 
