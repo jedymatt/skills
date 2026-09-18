@@ -19,7 +19,12 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 
 ## Auto-activation
 
-Installed as a **Claude Code plugin**, a `PreToolUse` hook reminds Claude to invoke `coding-principles` (and `architecting-principles` for structural changes) the first time it edits a **code file** in a session. It fires once per session, only for code-file extensions (not `.md`, docs, or config), and never blocks the edit. Requires [`jq`](https://jqlang.github.io/jq/).
+Installed as a **Claude Code plugin**, two hooks invoke skills for you, both once per session and neither blocking:
+
+- `PreToolUse` — the first time Claude edits a **code file**, it is reminded to invoke `coding-principles` (and `architecting-principles` for structural changes). Only code-file extensions count, not `.md`, docs, or config.
+- `UserPromptSubmit` — on the first prompt, Claude is reminded to invoke `matching-altitude` so replies stay pitched at the level of the message.
+
+Both require [`jq`](https://jqlang.github.io/jq/).
 
 The hook ships only with the plugin install path. With the [`skills`](https://skills.sh) CLI (or other agents), the skills' descriptions still prompt activation on their own — best-effort, since that path can't bundle hooks.
 
@@ -53,12 +58,13 @@ This repo is also a Claude Code [plugin marketplace](https://code.claude.com/doc
 ## Use in Cursor
 
 This repo doubles as a **Cursor plugin**. Cursor reads the same `skills/<name>/SKILL.md`
-format, so all 10 skills work there unchanged. It also adds a `sessionStart` hook that
-reminds the agent to use `coding-principles` / `architecting-principles`.
+format, so all 10 skills work there unchanged. It also adds two `sessionStart` hooks that
+remind the agent to use `coding-principles` / `architecting-principles`, and
+`matching-altitude` for replies.
 
 - Cursor manifest: `.cursor-plugin/plugin.json`
 - Cursor marketplace entry: `.cursor-plugin/marketplace.json`
-- Cursor hook: `hooks/hooks.cursor.json` → `hooks/remind-coding-skills.cursor.sh`
+- Cursor hooks: `hooks/hooks.cursor.json` → `hooks/remind-coding-skills.cursor.sh`, `hooks/remind-reply-style.cursor.sh`
 
 Install it from the Cursor marketplace, or point Cursor at this repo. The Claude Code
 plugin still works the same way — this release only bumps its version. Both tools read
