@@ -1,6 +1,6 @@
 ---
 name: writing-plain-english
-description: Use when drafting or rewriting any English prose for the user — Slack messages, daily updates, PR descriptions, commit messages, docs, comments, or replies. Use when the user asks to simplify, reword, or make text sound more natural.
+description: Use when drafting or rewriting any English prose for the user — Slack messages, daily updates, PR descriptions, commit messages, docs, or comments. Use when the user asks to simplify, reword, or make text sound more natural.
 ---
 
 # Writing Plain English
@@ -11,10 +11,10 @@ The user is not a native English speaker. Fancy words sound unnatural under thei
 
 ## When to Use
 
-- Any English prose written *for* the user (it goes out under their name): Slack/chat, daily updates, PR descriptions, commit messages, docs, code comments, emails, replies.
+- Any English prose written *for* the user (it goes out under their name): Slack/chat, daily updates, PR descriptions, commit messages, docs, code comments, emails.
 - When the user pastes text and asks to simplify, reword, shorten, or "make it sound natural."
 
-Does NOT apply to: code, identifiers, or an error message quoted exactly.
+Does NOT apply to: code, identifiers, or an error message quoted exactly. Replies to the user in chat are `matching-altitude`'s job — it sets how deep the reply goes.
 
 ## Rules
 
