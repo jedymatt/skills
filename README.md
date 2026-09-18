@@ -11,6 +11,7 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
 | `handoff` | Save a short, forward-looking note (per-topic, named by git branch) to `.handoff/handoff.md` so the next session can pick up. You pick which topics carry forward. Pairs with `load-handoff`. |
 | `load-handoff` | Read back the handoff saved by `handoff` — "where was I?" / "catch me up". Shows all topics, or one. Read-only. |
+| `matching-altitude` | Answer at the same level of detail as the question. High-level ask gets a high-level answer; technical ask gets a technical one. Offer the detail instead of dumping it. |
 | `pruning-comments` | Cleanup pass over comments that already exist: cut the ones that restate the code, echo a signature, banner a section, or preserve commented-out code and changelog notes — keep the why, the constraint, and the outside context, in one line. Leaves pragmas, TODOs, and licence headers alone. |
 | `stacking-prs` | Stacked PRs with Git Town: dependent branches, whole-stack sync/propose, and shipping a stack in order. Builds on `using-git-town`. |
 | `using-git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
@@ -52,7 +53,7 @@ This repo is also a Claude Code [plugin marketplace](https://code.claude.com/doc
 ## Use in Cursor
 
 This repo doubles as a **Cursor plugin**. Cursor reads the same `skills/<name>/SKILL.md`
-format, so all 9 skills work there unchanged. It also adds a `sessionStart` hook that
+format, so all 10 skills work there unchanged. It also adds a `sessionStart` hook that
 reminds the agent to use `coding-principles` / `architecting-principles`.
 
 - Cursor manifest: `.cursor-plugin/plugin.json`

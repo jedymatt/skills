@@ -1,8 +1,8 @@
 {
   "name": "jedymatt-skills",
   "displayName": "jedymatt Skills",
-  "version": "0.7.0",
-  "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), handoff/load-handoff, and writing-plain-english.",
+  "version": "0.8.0",
+  "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), handoff/load-handoff, writing-plain-english, and matching-altitude.",
   "author": {
     "name": "jedymatt"
   },
@@ -17,7 +17,8 @@
     "git-town",
     "stacking-prs",
     "handoff",
-    "writing-plain-english"
+    "writing-plain-english",
+    "matching-altitude"
   ],
   "category": "developer-tools",
   "skills": "./skills/",
