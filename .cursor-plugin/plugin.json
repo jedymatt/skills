@@ -1,7 +1,7 @@
 {
   "name": "jedymatt-skills",
   "displayName": "jedymatt Skills",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), handoff/load-handoff, writing-plain-english, and matching-altitude.",
   "author": {
     "name": "jedymatt"
