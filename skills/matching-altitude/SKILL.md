@@ -1,6 +1,6 @@
 ---
 name: matching-altitude
-description: Use when replying to the user in any conversation — pitch the answer at the same level of detail as their message. High-level question gets a high-level answer, technical question gets a technical answer. Use when the user says a reply was too long, too detailed, too vague, or not what they asked for.
+description: Use when replying to the user in any conversation — pitch the answer at the same level of detail as their message. High-level question gets a high-level answer, technical question gets a technical answer. It sets how deep the answer goes, never how much work or verification goes into it. Use when the user says a reply was too long, too detailed, too vague, or not what they asked for.
 ---
 
 # Matching Altitude
@@ -42,6 +42,7 @@ Length is the fastest signal. A one-line message rarely wants a page back.
 5. **When they go specific, go specific.** Staying vague when someone asks for the exact function is the same mistake in reverse.
 6. **Short still means complete.** Remove levels of detail, not the answer. Answer what they asked, at their level.
 7. **Match detail, not style.** This is about abstraction, not copying their tone, typing, or grammar.
+8. **Altitude is not effort.** Their message sets how much you *say*, never how much you *check*.
 
 ## Examples
 
