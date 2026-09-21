@@ -5,13 +5,13 @@
     "url": "https://github.com/jedymatt"
   },
   "metadata": {
-    "description": "jedymatt's personal Cursor plugin: coding/architecting principles, code-smell detection, comment pruning, git-town workflows, session handoff, plain-English writing, and altitude matching."
+    "description": "jedymatt's personal Cursor plugin: coding/architecting principles, code-smell detection, comment pruning, git-town workflows, plain-English writing, and altitude matching."
   },
   "plugins": [
     {
       "name": "jedymatt-skills",
       "source": "./",
-      "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), handoff/load-handoff, writing-plain-english, and matching-altitude."
+      "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), writing-plain-english, and matching-altitude."
     }
   ]
 }
