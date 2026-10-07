@@ -1,11 +1,11 @@
 {
   "name": "jedymatt-skills",
-  "version": "0.12.0",
-  "description": "jedymatt's personal Claude Code skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), and writing-plain-english.",
+  "version": "0.13.0",
+  "description": "jedymatt's personal Claude Code skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, spotting-product-decisions, git-town (with PR stacking), and writing-plain-english.",
   "author": {
     "name": "jedymatt"
   },
   "homepage": "https://github.com/jedymatt/skills",
   "repository": "https://github.com/jedymatt/skills",
-  "keywords": ["skills", "coding-principles", "architecting-principles", "detecting-code-smells", "pruning-comments", "git-town", "stacking-prs", "writing-plain-english"]
+  "keywords": ["skills", "coding-principles", "architecting-principles", "detecting-code-smells", "pruning-comments", "spotting-product-decisions", "git-town", "stacking-prs", "writing-plain-english"]
 }

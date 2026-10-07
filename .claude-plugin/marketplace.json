@@ -8,7 +8,7 @@
     {
       "name": "jedymatt-skills",
       "source": "./",
-      "description": "jedymatt's personal Claude Code skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, git-town (with PR stacking), and writing-plain-english."
+      "description": "jedymatt's personal Claude Code skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, spotting-product-decisions, git-town (with PR stacking), and writing-plain-english."
     }
   ]
 }
