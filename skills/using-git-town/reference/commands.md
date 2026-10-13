@@ -43,7 +43,7 @@ git town propose -t "Add auth" -b "Implements OAuth2"
 
 ---
 
-> Stacking commands — `append`, `prepend`, `commit --up`, `swap`, `detach`, `combine`, `diff-parent`, `set-parent`, `up`/`down`, `walk` — are in the **stacking-prs** skill.
+> Stacking commands — `append`, `prepend`, `commit --up`, `swap`, `detach`, `combine`, `diff-parent`, `set-parent`, `up`/`down`, `walk` — are in the Stacks section of `SKILL.md`.
 
 ## Branch Type Commands
 

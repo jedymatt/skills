@@ -44,7 +44,7 @@ Stop until the user picks. Don't create branches before that.
 
 ## 5. Build
 
-Use what's installed: `gh stack` (**gh-stack**), then Git Town (**stacking-prs**), then plain branches with `gh pr create --base <parent>`. Build each layer from the PR's final state, not by replaying commits: `git diff <base>...<branch> -- <paths> | git apply --3way`. Copying whole files with `git checkout <branch> -- <path>` silently reverts whatever landed on the base since.
+Use what's installed. **stacking-prs** has the commands for gh stack, Git Town, and plain git. Build each layer from the PR's final state, not by replaying commits: `git diff <base>...<branch> -- <paths> | git apply --3way`. Copying whole files with `git checkout <branch> -- <path>` silently reverts whatever landed on the base since.
 
 ## 6. Verify
 

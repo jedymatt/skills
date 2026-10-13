@@ -1,8 +1,8 @@
 {
   "name": "jedymatt-skills",
   "displayName": "jedymatt Skills",
-  "version": "0.15.0",
-  "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, spotting-product-decisions, weighing-future-proofing, splitting-prs, git-town (with PR stacking), and writing-plain-english.",
+  "version": "0.15.1",
+  "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, spotting-product-decisions, weighing-future-proofing, splitting-prs, stacking-prs, git-town, and writing-plain-english.",
   "author": {
     "name": "jedymatt"
   },
