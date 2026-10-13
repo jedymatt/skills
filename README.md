@@ -10,6 +10,7 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 | `coding-principles` | Code-quality + low-cognitive-load defaults: Rule of Three, single responsibility, one level of abstraction, early return, no nested loops, no double negatives, named conditions, command–query separation, tight variable scope, one name per concept, obvious over clever, no boolean params, max 3 args, named constants, narrow coupling. |
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
 | `pruning-comments` | Cleanup pass over comments that already exist: cut the ones that restate the code, echo a signature, banner a section, or preserve commented-out code and changelog notes — keep the why, the constraint, and the outside context, in one line. Leaves pragmas, TODOs, and licence headers alone. |
+| `reviewing-for-risk` | Review a PR, diff, or stack for what could go wrong once it ships: follow every write past the diff (into approved parent PRs and the database client) to what gets stored and whether it reads back, and compare with sibling flows' safeguards. Findings go in strict tiers (stored data, security, broken on merge, everything else), each with its path, worst case (who, how many, can it be undone), and a blocker / follow-up / question verdict. |
 | `spotting-product-decisions` | Before making a choice users would notice, or saying something "can't" be done: tell a technical limitation (the code decides — solve it) from a product decision (people decide — surface options with what the user sees, and who owns it). Catches "can't" that really means "costs X", and stops escalating questions the code can answer. |
 | `splitting-prs` | Split an existing PR into a stack by kind of change, not by file or layer: structural changes (behaviour unchanged) go in pre-PRs, behaviour changes get their own layer, guards and cleanup go in post-PRs, and unrelated fixes become their own PR. New code rides with its first caller. Shows the before and after with a plan, waits for a pick, then builds with gh stack, Git Town, or plain git and checks that the top of the stack matches the original. |
 | `stacking-prs` | Stacked PRs with any tool (gh stack, Git Town, or plain git): when to stack vs open separate PRs, restacking after a lower branch changes, merging bottom-up (squash merges, PR bases), and fixes in the layer that owns them. One table maps each step to each tool. |
@@ -55,7 +56,7 @@ This repo is also a Claude Code [plugin marketplace](https://code.claude.com/doc
 ## Use in Cursor
 
 This repo doubles as a **Cursor plugin**. Cursor reads the same `skills/<name>/SKILL.md`
-format, so all 10 skills work there unchanged. It also adds a `sessionStart` hook that
+format, so all 11 skills work there unchanged. It also adds a `sessionStart` hook that
 reminds the agent to use `coding-principles` / `architecting-principles`.
 
 - Cursor manifest: `.cursor-plugin/plugin.json`
