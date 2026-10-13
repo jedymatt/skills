@@ -11,6 +11,7 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
 | `pruning-comments` | Cleanup pass over comments that already exist: cut the ones that restate the code, echo a signature, banner a section, or preserve commented-out code and changelog notes — keep the why, the constraint, and the outside context, in one line. Leaves pragmas, TODOs, and licence headers alone. |
 | `spotting-product-decisions` | Before making a choice users would notice, or saying something "can't" be done: tell a technical limitation (the code decides — solve it) from a product decision (people decide — surface options with what the user sees, and who owns it). Catches "can't" that really means "costs X", and stops escalating questions the code can answer. |
+| `splitting-prs` | Split an existing PR into a stack by kind of change, not by file or layer: structural changes (behaviour unchanged) go in pre-PRs, behaviour changes get their own layer, guards and cleanup go in post-PRs, and unrelated fixes become their own PR. New code rides with its first caller. Shows the before and after with a plan, waits for a pick, then builds with gh stack, Git Town, or plain git and checks that the top of the stack matches the original. |
 | `stacking-prs` | Stacked PRs with Git Town: dependent branches, whole-stack sync/propose, and shipping a stack in order. Builds on `using-git-town`. |
 | `using-git-town` | How to use [Git Town](https://www.git-town.com/) for branch creation, syncing, switching, proposing, and shipping. |
 | `weighing-future-proofing` | When a choice turns on a need that might come later: weigh the cost of adding it later (stored data, outside contracts, callers) against the evidence the need is coming, and look for cheap insurance. Lopsided calls get a one-line decision; close calls get both sides with pros and cons, then wait for the user. |
@@ -54,7 +55,7 @@ This repo is also a Claude Code [plugin marketplace](https://code.claude.com/doc
 ## Use in Cursor
 
 This repo doubles as a **Cursor plugin**. Cursor reads the same `skills/<name>/SKILL.md`
-format, so all 9 skills work there unchanged. It also adds a `sessionStart` hook that
+format, so all 10 skills work there unchanged. It also adds a `sessionStart` hook that
 reminds the agent to use `coding-principles` / `architecting-principles`.
 
 - Cursor manifest: `.cursor-plugin/plugin.json`
