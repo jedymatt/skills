@@ -1,6 +1,6 @@
 ---
 name: coding-principles
-description: Use when writing or changing code and second-guessing whether a choice is clean — the "is this fine?", "does this smell?", "leave it inline or refactor?", "how do I split this?" moments mid-coding. Covers per-function and per-file calls like a magic number or delay instead of a named constant; a boolean flag or 4th parameter; abstraction/config "for later"; a function growing long or mixing levels; reaching through an a.b.c.d chain; duplicating a block; a comment a better name would replace. Write-time judgment on code you're touching now — not auditing existing code for smells (detecting-code-smells), nor module/layer structure (architecting-principles).
+description: Use when writing or changing code and second-guessing whether a choice is clean — the "is this fine?", "does this smell?", "leave it inline or refactor?", "how do I split this?" moments mid-coding. Covers per-function and per-file calls like a magic number or delay instead of a named constant; a boolean flag or 4th parameter; a function growing long or mixing levels; reaching through an a.b.c.d chain; duplicating a block; a comment a better name would replace. Write-time judgment on code you're touching now — not auditing existing code for smells (detecting-code-smells), nor module/layer structure (architecting-principles), nor whether to build for a future need (weighing-future-proofing).
 ---
 
 # Coding Principles
@@ -13,7 +13,7 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 |---|---|
 | Logic duplicated 2× | Leave it WET — don't extract, don't request extraction in review |
 | Same logic appears a 3rd time | Extract now (Rule of Three / DRY) |
-| About to add abstraction/config/a param "for later" | Don't — build only what the task needs now (YAGNI) |
+| About to add abstraction/config/a param "for later" | Weigh it with **weighing-future-proofing** |
 | Writing or growing a function with SRP signs (below) | Split into named phase functions |
 | A function mixing high-level intent with low-level mechanics | Lift the detail into a named helper — one altitude per function |
 | Wrapping a function body in `if (ok) { … }` | Guard clause — bail early on the negative, keep the happy path flat |
@@ -35,17 +35,6 @@ Personal defaults for code-quality judgment, in any language. Scope: **only code
 ## Rule of Three
 
 Two occurrences are not enough evidence to pick the right abstraction; a wrong abstraction costs more to unwind than duplication. "They'll drift apart" is not a reason at 2× — if they drift, they were never the same thing. The third occurrence proves the shape: extract then.
-
-## Don't over-engineer
-
-Build for the requirement in front of you, not an imagined future (YAGNI). Speculative generality costs now for a need that may never arrive — and is usually guessed wrong.
-
-- No abstraction, interface, config flag, or extension point until a *second real* caller needs it (Rule of Three again).
-- No parameters or hooks for cases the task doesn't have; delete "just in case" options.
-- Prefer the direct solution — a function over a framework, a literal over a config system, a plain call over an indirection layer.
-- One concrete implementation beats a configurable engine with a single user.
-
-Solving a more general problem than asked is scope creep — flag the future need instead of building for it.
 
 ## Single responsibility
 
@@ -327,7 +316,6 @@ n === 1
 | "Constants can come in a follow-up" | They never do. Same commit. |
 | "It's basically the same function" | Then occurrence #3 will prove it. |
 | "Splitting it bloats the diff" | You're already modifying it — named phases review easier than a longer monolith. |
-| "We'll need this flexibility later" | Usually you won't, or you'll guess wrong. Add it when the need is real. |
 | "Single exit is cleaner" | One return buried in nested `if`s reads worse than guards that bail early up front. |
 | "It's just iterating, nesting is natural" | Past two levels you track every index at once. Extract the inner loop. |
 | "`not is_not_done` is clear enough" | It's two flips to read. Name the positive predicate. |
@@ -359,4 +347,3 @@ n === 1
 - A function named as a noun (`total()`), a variable named as a verb (`calculate`), or a boolean that isn't a predicate
 - A comment that paraphrases the adjacent name or code
 - Refactoring functions your task didn't touch
-- An abstraction, config knob, or parameter whose only caller is hypothetical

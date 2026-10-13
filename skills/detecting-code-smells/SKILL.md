@@ -34,7 +34,7 @@ Several map to **coding-principles** — for those, the fix lives there.
 | Magic number | Bare meaningful literal in an expression | Named constant — coding-principles |
 | Message chain / train wreck | Calls at the end of `a.b.c.d` | Accept the collaborator directly — coding-principles |
 | Side-effecting query | A `get_`/`is_` function mutates state, or a command returns data to read | Split command from query — coding-principles |
-| Premature abstraction | Layer/config/param with one or hypothetical caller | Inline it; wait for a real need — coding-principles |
+| Premature abstraction | Layer/config/param with one or hypothetical caller | Weigh keeping it vs inlining — weighing-future-proofing |
 | Premature DRY | Extraction of logic seen only twice | Leave WET until the 3rd use — coding-principles |
 | Redundant comment | Comment paraphrases the adjacent name/code | Delete it; rename instead — pruning-comments |
 | Long method | Many lines / responsibilities regardless of phases | Extract sub-steps |
