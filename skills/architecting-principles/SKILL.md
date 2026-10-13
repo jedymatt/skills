@@ -1,6 +1,6 @@
 ---
 name: architecting-principles
-description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to create or edit code that changes structure — add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), split or merge modules, or add a structural boundary for a future need.
+description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to create or edit code that changes structure — add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), or split or merge modules. Whether to add a boundary for a future need is weighing-future-proofing.
 ---
 
 # Architecting Principles
@@ -21,7 +21,7 @@ Personal defaults for architecture-level judgment, in any language. One level ab
 | Exposing a module to the rest of the system | Publish the narrowest contract; hide internals and concrete types |
 | Calling an external system from core logic | Wrap it behind a port; keep the SDK import at the edge |
 | Two places writing the same state | Give the state one owner; others go through it |
-| Tempted to add a layer/service/package "for later" | Don't — add the boundary when a real seam appears (YAGNI) |
+| Tempted to add a layer/service/package "for later" | Weigh it with **weighing-future-proofing** |
 
 ## Dependency direction
 
@@ -61,23 +61,12 @@ Personal defaults for architecture-level judgment, in any language. One level ab
 - **Inject config and secrets at the edge.** Pass them in from the entry point; don't read env/config deep inside domain code — deep reads hide dependencies and break tests.
 - **One error strategy per layer.** Decide where errors are handled vs. propagated, and be consistent. Don't swallow an error at a boundary to make a caller look clean.
 
-## Don't over-architect
-
-YAGNI for structure. A wrong boundary is paid on every crossing and is expensive to unwind.
-
-- No new layer, service, package, interface, or extension point until a *second real* case needs it. One implementation behind an interface is just indirection.
-- Don't split into services/modules before there's a real seam — a separate change rate, team, or scaling need. "Might need to scale" is not a seam.
-- A monolith you can refactor beats a distributed system you can't. Distribution adds network, partial failure, and versioning costs — take them on for a real reason.
-- Add the boundary when the second caller, the real scaling limit, or the real team split arrives. Flag the future need instead of building for it.
-
 ## Rationalizations
 
 | Excuse | Reality |
 |---|---|
-| "We'll need this layer later" | The boundary costs you on every call now. Add it when the second case is real. |
 | "A `shared` module avoids duplication" | It becomes a cycle magnet and a junk drawer with no owner. Name the real home. |
 | "Just import the SDK here, it's quick" | Now the core can't be tested or swapped. Wrap it at the edge. |
-| "Microservices will scale better" | They add network and partial-failure costs today for scaling you may never need. |
 | "The cycle works, leave it" | Until you try to test, build, or change either side alone. Break it now. |
 | "Returning the DB row saves a mapping" | Every caller is now coupled to your schema. Map at the boundary. |
 
@@ -91,4 +80,3 @@ YAGNI for structure. A wrong boundary is paid on every crossing and is expensive
 - A public export that exposes an internal, DB, or vendor type
 - Two places writing the same state
 - Config or `env` read deep inside domain logic
-- A new layer, service, or package whose only caller is hypothetical
