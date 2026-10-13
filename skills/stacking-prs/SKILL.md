@@ -16,6 +16,8 @@ A stack is a chain of dependent branches — each the child of the one before �
 - A change too big for one PR — split it into dependent steps.
 - Work that builds on a branch still in review.
 
+Deciding where to cut an existing PR is **splitting-prs**; this skill is the Git Town mechanics.
+
 **Not for:** independent branches (use `git town hack`), or ordinary commits on the current branch.
 
 ## The Stack Model
