@@ -11,7 +11,7 @@ A stack is a chain of branches where each PR's base is the branch below it, so a
 
 ## Stack or separate PRs
 
-Stack a branch only when it needs code from the one below. Independent work goes in sibling PRs off the base: a stack makes every PR wait for the ones under it. Keep stacks short, since each layer is another rebase when something below changes.
+Stack a branch only when it needs code from the one below. Independent work goes in sibling PRs off the base: a stack makes every PR wait for the ones under it. Keep stacks short, since each layer is another rebase when something below changes. Before you add a branch to a ticket's stack, check that it belongs there: "Keep the stack to the ticket" in **splitting-prs**.
 
 ## Pick the tool
 
