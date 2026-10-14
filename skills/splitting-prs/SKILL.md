@@ -1,6 +1,6 @@
 ---
 name: splitting-prs
-description: Use when asked to split, break up, or shrink an existing PR or branch into smaller PRs or a stack — "too big to review", "split this into a stack", "pull the refactor into a pre-PR", "move this to a post-PR", atomic vs behavioural changes — before creating any branches, whether the repo uses gh stack, Git Town, or plain git.
+description: Use when asked to split, break up, or shrink an existing PR or branch into smaller PRs or a stack — "too big to review", "split this into a stack", "pull the refactor into a pre-PR", "move this to a post-PR", atomic vs behavioural changes — before creating any branches, whether the repo uses gh stack, Git Town, or plain git. Also use when a ticket's stack keeps growing — about to stack a bug found while testing or a follow-up feature, answering "what's next?" mid-stack, or sorting out a stack that crept past its ticket.
 ---
 
 # Splitting PRs
@@ -54,7 +54,37 @@ Use what's installed. **stacking-prs** has the commands for gh stack, Git Town, 
 
 Push and open PRs only after the user says go.
 
+## Keep the stack to the ticket
+
+A stack for a ticket holds the fix for the reported problem and what that fix needs. Before you add a PR to it, ask: does this fix the reported problem, or is the fix built on it? A change the user agreed to as part of the ticket counts as the fix, and so do the fix's own post-PRs. If it's none of these, it doesn't go in the stack.
+
+What you find along the way goes somewhere else:
+
+- **A bug you found while testing.** Report what you saw, the evidence, and the fix you'd make. Offer a separate PR off the base, with its own ticket. Don't branch it off the top of the stack. That makes it depend on work it has nothing to do with, and pulling it out later means rebases full of conflicts.
+- **A follow-up that builds on the fix.** Ask before you build it. It waits until the core PRs land, or gets its own ticket.
+
+When the user asks "what's next?", answer from the ticket, not from your list of things you noticed.
+
+Signs of creep:
+
+- The stack keeps growing past the plan the user agreed to.
+- A PR's description has to explain why it belongs with the ticket.
+
+### If the stack already crept
+
+Label each PR:
+
+| Label | Where it goes |
+|---|---|
+| **Fixes the ticket** | Stays in the stack |
+| **Prerequisite** | Stays in the stack, below the fix |
+| **Follow-up** | Leaves the stack. Waits for the core PRs to land, or gets its own ticket. |
+| **Unrelated bug** | Its own PR off the base |
+
+Keep a PR stacked on another only if it needs that PR's code. Present the new shape and wait, as in step 4. Then move each PR with **stacking-prs**. Expect conflicts wherever a later PR was built on top of one that leaves.
+
 ## Common mistakes
 
 - **Splitting by architecture** (engine → API → UI) while the refactors stay inside the feature PR.
 - **A "refactor" layer that adds a test or changes an output.** Relabel it, and move the test up.
+- **Stacking whatever you found next.** A bug found while testing, or a follow-up feature, goes in the ticket's stack only if the fix needs it.
