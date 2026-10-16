@@ -11,7 +11,7 @@
     {
       "name": "jedymatt-skills",
       "source": "./",
-      "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, spotting-product-decisions, weighing-future-proofing, splitting-prs, reviewing-for-risk, stacking-prs, git-town, and writing-plain-english."
+      "description": "jedymatt's personal skills: coding-principles, architecting-principles, detecting-code-smells, pruning-comments, spotting-product-decisions, weighing-future-proofing, splitting-prs, explaining-prs, reviewing-for-risk, stacking-prs, git-town, and writing-plain-english."
     }
   ]
 }
