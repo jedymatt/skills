@@ -42,6 +42,8 @@ N. [tier] [blocker | follow-up | question]: what goes wrong, in one line
 
 End with one line: safe to merge, or the blockers that have to be fixed first.
 
+Link every PR number, every time it appears, as `[#NNNN](<url>)`, not only its first mention. The reader jumps straight to a finding or the verdict, so a link in the opening line doesn't help them. That covers findings, fixes, and the verdict, and also PRs you only name, such as a parent in the stack or the PR a fix belongs in. Take the URL from `gh pr view <n> --json url`, and don't guess the repo.
+
 If nothing is found, say so and list what you traced (writes, reads, auth checks). Don't fill the list with smells.
 
 ## Common mistakes
