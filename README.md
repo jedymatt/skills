@@ -6,7 +6,7 @@ My personal [Claude Code skills](https://docs.claude.com/en/docs/claude-code/ski
 
 | Skill | What it does |
 |-------|--------------|
-| `architecting-principles` | Module-level defaults: one-way dependencies (no cycles), depend on abstractions, code lives with its data (no `utils` dumping ground), narrow contracts, wrap external systems behind ports, one-way data flow. One altitude above `coding-principles`. |
+| `architecting-principles` | Module-level defaults: one-way dependencies (no cycles), depend on abstractions, code lives with its data (no `utils` dumping ground), narrow contracts, wrap external systems behind ports, one-way data flow, and the server enforces every rule the UI shows (same PR, even when the plan said "no backend change"). One altitude above `coding-principles`. |
 | `coding-principles` | Code-quality + low-cognitive-load defaults: Rule of Three, single responsibility, one level of abstraction, early return, no nested loops, no double negatives, named conditions, command–query separation, tight variable scope, one name per concept, obvious over clever, no boolean params, max 3 args, named constants, narrow coupling. |
 | `detecting-code-smells` | Review-time detection: scan a file/diff/PR for design smells (god functions, feature envy, primitive obsession, …) and report a findings list. Complements `coding-principles`. |
 | `explaining-prs` | Explain what a PR does for the people using the software: a numbered walk-through of the flow before and after, one per separate change, each step led by who acts, ending on what they see. Code names stay in a short list at the end, and every PR number is a link. |

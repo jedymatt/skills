@@ -1,6 +1,6 @@
 ---
 name: architecting-principles
-description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to create or edit code that changes structure — add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), or split or merge modules. Whether to add a boundary for a future need is weighing-future-proofing.
+description: Use when designing or changing how code is organized across modules, packages, or components — especially when about to create or edit code that changes structure — add a new module/layer/service, decide where new code lives, introduce a dependency between parts, create a `utils`/`shared`/`common` bucket, wire a module directly to an external system (DB/HTTP/SDK/vendor), split or merge modules, or add a rule users must not get around (validation, uniqueness, a locked or never-overwrite field, a permission), including when planning a fix for one. Whether to add a boundary for a future need is weighing-future-proofing.
 ---
 
 # Architecting Principles
@@ -21,6 +21,7 @@ Personal defaults for architecture-level judgment, in any language. One level ab
 | Exposing a module to the rest of the system | Publish the narrowest contract; hide internals and concrete types |
 | Calling an external system from core logic | Wrap it behind a port; keep the SDK import at the edge |
 | Two places writing the same state | Give the state one owner; others go through it |
+| Adding a rule users must not get around (unique value, locked field, permission) | The server enforces it, in the same PR; the UI shows it early |
 | Tempted to add a layer/service/package "for later" | Weigh it with **weighing-future-proofing** |
 
 ## Dependency direction
@@ -61,6 +62,14 @@ Personal defaults for architecture-level judgment, in any language. One level ab
 - **Inject config and secrets at the edge.** Pass them in from the entry point; don't read env/config deep inside domain code — deep reads hide dependencies and break tests.
 - **One error strategy per layer.** Decide where errors are handled vs. propagated, and be consistent. Don't swallow an error at a boundary to make a caller look clean.
 
+## Trust boundary
+
+The server is the guard; the UI is a preview. A handmade request (curl, devtools, an old tab, a script) reaches the endpoint without passing through any component.
+
+- **The server enforces every rule.** A unique value, a locked field, a required value, never-overwrite, a permission: the endpoint rejects a request that breaks it. The UI check comes second, so the user sees the problem before they submit.
+- **Same PR, whatever the agreed scope.** A plan or PR that says "UI-only" or "no backend change" described the fix before this rule existed. Add the server check and rewrite that line.
+- **Before planning where a rule is enforced, read `reference/trust-boundary.md`**: the steps (shared entry point, required fields, checking what's stored, all-or-nothing writes) and the excuses that defer the server check.
+
 ## Rationalizations
 
 | Excuse | Reality |
@@ -69,6 +78,7 @@ Personal defaults for architecture-level judgment, in any language. One level ab
 | "Just import the SDK here, it's quick" | Now the core can't be tested or swapped. Wrap it at the edge. |
 | "The cycle works, leave it" | Until you try to test, build, or change either side alone. Break it now. |
 | "Returning the DB row saves a mapping" | Every caller is now coupled to your schema. Map at the boundary. |
+| "The UI already blocks it, so no backend change is needed" | A handmade request gets through. The endpoint rejects it; the UI check only shows it sooner. |
 
 ## Red flags
 
@@ -80,3 +90,4 @@ Personal defaults for architecture-level judgment, in any language. One level ab
 - A public export that exposes an internal, DB, or vendor type
 - Two places writing the same state
 - Config or `env` read deep inside domain logic
+- A validation, lock, or uniqueness rule that lives only in a component
