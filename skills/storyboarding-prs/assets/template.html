@@ -1,0 +1,474 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Storyboard</title>
+<style>
+  :root {
+    --bg: #fafaf8; --card: #fff; --ink: #1c1c1e; --muted: #77777c; --faint: #b4b4b8; --line: #e8e6e1; --soft: #f3f2ef;
+    --c1: #2f6fd6; --c2: #8a4fd1; --c3: #1f8a8a;
+    --orange: #d9822b; --blue: #2f6fd6; --system: #1c1c1e;
+    --bad: #c8372d; --bad-soft: #fdeeec; --good: #1f8a4c; --good-soft: #e8f6ee;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151517; --card: #1e1e21; --ink: #ededf0; --muted: #9a9aa2; --faint: #5c5c63; --line: #303035; --soft: #26262a;
+      --system: #ededf0; --bad-soft: #3a1f1d; --good-soft: #17301f;
+    }
+  }
+  * { box-sizing: border-box; }
+  /* Author `display` rules beat the browser's own [hidden] rule; this keeps el.hidden working. */
+  [hidden] { display: none !important; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 17px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 980px; margin: 0 auto; padding: 64px 24px 96px; }
+  a { color: inherit; text-underline-offset: 3px; }
+  button { font: inherit; cursor: pointer; }
+
+  .eyebrow { font-size: 14px; color: var(--muted); margin-bottom: 14px; }
+  h1 { font-size: 34px; line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 20px; font-weight: 700; }
+  .lead { font-size: 19px; color: var(--muted); margin: 0; max-width: 720px; }
+  .lead strong { color: var(--ink); font-weight: 600; }
+  .cast { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 32px; }
+  .cast div { display: flex; align-items: center; gap: 10px; font-size: 15px; }
+  .cast span.r { color: var(--muted); }
+
+  .controls { display: flex; align-items: center; gap: 16px; margin: 56px 0 28px; flex-wrap: wrap; }
+  .seg { display: inline-flex; background: var(--line); border-radius: 10px; padding: 4px; }
+  .seg button { border: 0; background: transparent; color: var(--muted); padding: 8px 20px; border-radius: 7px; font-weight: 600; font-size: 15px; }
+  .seg button.on { background: var(--card); color: var(--ink); box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+  .seg button.on.before { color: var(--bad); }
+  .seg button.on.after { color: var(--good); }
+  .steps { display: flex; gap: 6px; margin-left: auto; align-items: center; }
+  .steps button { width: 34px; height: 34px; border-radius: 50%; border: 0; background: transparent; color: var(--faint); font-size: 14px; font-weight: 600; }
+  .steps button.done { color: var(--muted); }
+  .steps button.cur { background: var(--ink); color: var(--bg); }
+  .steps button.key:not(.cur) { color: var(--bad); }
+  .steps .gap { width: 1px; height: 18px; background: var(--line); margin: 0 6px; }
+  .arrows { display: flex; gap: 8px; }
+  .arrows button { border: 1px solid var(--line); background: var(--card); color: var(--ink); border-radius: 10px; padding: 8px 16px; font-size: 15px; font-weight: 600; }
+  .arrows button:disabled { opacity: .35; cursor: default; }
+
+  .stage { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 40px 44px 44px; transition: box-shadow .3s; }
+  .stage.bad { box-shadow: 0 0 0 2px var(--bad); }
+  .stage.good { box-shadow: 0 0 0 2px var(--good); }
+  .what { font-size: 25px; line-height: 1.3; font-weight: 650; letter-spacing: -0.01em; margin: 0 0 8px; max-width: 780px; }
+  .why { color: var(--muted); margin: 0; max-width: 720px; }
+
+  /* Scene: actor → verb → app */
+  .scene { display: grid; grid-template-columns: 150px 110px 1fr; align-items: center; margin: 0 0 36px; min-height: 250px; }
+  .actor { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; }
+  .avatar { width: 84px; height: 84px; border-radius: 50%; display: grid; place-items: center; }
+  .avatar svg { width: 56px; height: 56px; }
+  .actor .name { font-weight: 650; font-size: 16px; }
+  .actor .role { font-size: 13px; color: var(--muted); line-height: 1.35; }
+  .mini { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+  .mini svg { width: 22px; height: 22px; }
+  .verb { display: flex; flex-direction: column; align-items: center; color: var(--muted); font-size: 13px; gap: 4px; text-align: center; }
+  .verb .line { width: 60px; height: 2px; background: var(--faint); position: relative; }
+  .verb .line::after { content: ""; position: absolute; right: -2px; top: -5px; border: 6px solid transparent; border-left: 8px solid var(--faint); border-right: 0; }
+  .app { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+  .app .where { font-size: 13px; color: var(--muted); }
+  .app .where b { color: var(--ink); font-weight: 600; }
+
+  .phone { width: 210px; border: 9px solid var(--ink); border-radius: 30px; background: var(--card); padding: 18px 14px 22px; position: relative; }
+  .phone::before { content: ""; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 54px; height: 5px; border-radius: 3px; background: var(--line); }
+  .phone .ttl { font-size: 13px; font-weight: 700; margin: 6px 0 2px; }
+  .phone .sub { font-size: 11.5px; color: var(--muted); margin-bottom: 12px; }
+  .phone .drop { border: 1.5px dashed var(--line); border-radius: 10px; padding: 10px; font-size: 12px; color: var(--muted); text-align: center; margin-bottom: 10px; }
+  .phone .row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding: 8px 10px; background: var(--soft); border-radius: 8px; margin-top: 6px; }
+  .phone .row .ok { margin-left: auto; color: var(--good); font-weight: 700; }
+
+  .browser { width: 100%; max-width: 560px; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--card); box-shadow: 0 6px 24px rgba(0,0,0,.06); }
+  .browser .top { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--soft); border-bottom: 1px solid var(--line); font-size: 12px; color: var(--muted); }
+  .browser .top i { width: 9px; height: 9px; border-radius: 50%; background: var(--line); display: inline-block; }
+  .browser .top .url { margin-left: 10px; background: var(--card); border-radius: 6px; padding: 2px 10px; }
+  .browser .view { display: grid; grid-template-columns: 1fr 250px; min-height: 190px; position: relative; }
+  .browser .view.single { grid-template-columns: 1fr; }
+  .page { padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .page .h { font-size: 12.5px; font-weight: 700; }
+  .page .bar { height: 8px; border-radius: 4px; background: var(--soft); }
+  .panel { border-left: 1px solid var(--line); padding: 14px; background: var(--card); box-shadow: -8px 0 16px -12px rgba(0,0,0,.2); }
+  .panel .t { font-size: 12.5px; font-weight: 700; }
+  .panel .s { font-size: 11.5px; color: var(--muted); margin-bottom: 10px; }
+  .panel .file { display: flex; align-items: center; gap: 6px; font-size: 12px; padding: 6px 8px; background: var(--soft); border-radius: 6px; margin-bottom: 12px; }
+  .ui-btn { display: block; width: 100%; text-align: center; padding: 7px 10px; border-radius: 7px; font-size: 12.5px; font-weight: 600; border: 1px solid var(--line); margin-top: 6px; position: relative; }
+  .ui-btn.hot { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .ui-btn.hot::after { content: ""; position: absolute; right: -14px; bottom: -14px; width: 22px; height: 22px;
+    background: no-repeat center/contain url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 3l14 8-6 2-3 6z' fill='%23fff' stroke='%23000' stroke-width='1.5' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+  .inline-msg { margin-top: 10px; font-size: 11.5px; padding: 7px 9px; border-radius: 7px; line-height: 1.35; }
+  .inline-msg.err { background: var(--bad-soft); color: var(--bad); }
+  .inline-msg.ok { background: var(--good-soft); color: var(--good); font-weight: 600; }
+  .inline-msg.tip { background: var(--ink); color: var(--card); }
+  .app-toast { position: absolute; right: 14px; bottom: 14px; max-width: 260px; display: flex; gap: 8px; align-items: flex-start;
+    background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 9px 12px; font-size: 12px; line-height: 1.4;
+    box-shadow: 0 8px 22px rgba(0,0,0,.12); font-weight: 600; }
+  .app-toast.ok { color: var(--good); } .app-toast.err { color: var(--bad); }
+  .app-toast .i { flex: none; width: 16px; height: 16px; border-radius: 50%; background: currentColor; color: var(--card); font-size: 11px; display: grid; place-items: center; font-style: italic; font-family: Georgia, serif; }
+
+  .runner { width: 100%; max-width: 560px; border: 1px solid var(--line); border-radius: 12px; background: var(--card); padding: 16px 18px; box-shadow: 0 6px 24px rgba(0,0,0,.06); }
+  .runner .t { font-size: 13px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .runner .t .spin { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--line); border-top-color: var(--ink); animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .task { display: grid; grid-template-columns: 24px 1fr; gap: 10px; padding: 9px 0; border-top: 1px solid var(--line); font-size: 14px; align-items: start; }
+  .task:first-of-type { border-top: 0; }
+  .task .ic { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 12px; font-weight: 700; background: var(--soft); color: var(--faint); }
+  .task.done .ic { color: var(--ink); }
+  .task.now { font-weight: 600; }
+  .task.now .ic { background: var(--ink); color: var(--bg); }
+  .task.fail .ic, .task.bad .ic { background: var(--bad); color: #fff; }
+  .task.good .ic { background: var(--good); color: #fff; }
+  .task.todo { color: var(--faint); }
+  .task .res { display: block; font-size: 13px; font-weight: 400; color: var(--muted); }
+  .task.fail .res, .task.bad .res { color: var(--bad); font-weight: 600; }
+  .task.good .res { color: var(--good); font-weight: 600; }
+  .note { margin-top: 12px; display: inline-flex; gap: 8px; font-size: 12.5px; padding: 6px 10px; border-radius: 7px; background: var(--soft); color: var(--muted); }
+  .note.stale { background: var(--bad-soft); color: var(--bad); font-weight: 600; }
+  .then { margin-top: 12px; font-size: 12.5px; color: var(--good); line-height: 1.45; }
+
+  /* Consequence: what the step does to the data */
+  .divider { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; font-weight: 600; margin: 36px 0 8px; }
+  .divider::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+  .world { position: relative; margin-top: 18px; padding-top: 72px; display: grid; grid-template-columns: repeat(var(--cols, 2), 1fr); gap: 28px; }
+  .item-pill { position: absolute; top: 0; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 10px; padding: 8px 16px; border-radius: 999px; border: 1px solid var(--line); background: var(--card); font-size: 15px; font-weight: 600; z-index: 1; white-space: nowrap; }
+  .item-pill .to { font-weight: 400; color: var(--muted); }
+  .fi { width: 13px; height: 17px; border: 1.5px solid currentColor; border-radius: 3px; opacity: .6; flex: none; display: inline-block; }
+  svg.links { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; }
+  svg.links path { fill: none; stroke-width: 2.5; stroke-dasharray: 6 6; animation: march 1.2s linear infinite; }
+  @keyframes march { to { stroke-dashoffset: -24; } }
+  .ent { border: 1px solid var(--line); border-radius: 14px; padding: 20px; min-height: 140px; transition: opacity .35s, border-color .35s, background .35s; }
+  .ent h3 { margin: 0 0 2px; font-size: 16px; }
+  .ent .sub { font-size: 13.5px; color: var(--muted); margin-bottom: 16px; }
+  .ent.absent { opacity: .3; }
+  .ent.lost { border-color: var(--bad); background: var(--bad-soft); }
+  .ent.kept { border-color: var(--good); background: var(--good-soft); }
+  .doc { display: flex; align-items: center; gap: 10px; font-size: 15px; padding: 9px 12px; border-radius: 8px; background: var(--soft); }
+  .doc.gone { background: transparent; border: 1.5px dashed var(--bad); color: var(--bad); }
+  .none { font-size: 14.5px; color: var(--faint); }
+  .ent .msg { margin-top: 10px; font-size: 14px; font-weight: 600; }
+  .ent.lost .msg { color: var(--bad); } .ent.kept .msg { color: var(--good); }
+
+  section { margin-top: 88px; }
+  h2 { font-size: 22px; letter-spacing: -0.01em; margin: 0 0 14px; }
+  section p { margin: 0 0 14px; color: var(--muted); max-width: 720px; }
+  section p strong { color: var(--ink); }
+  .chips { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 22px; font-size: 15px; }
+  .chips span { padding: 6px 12px; border-radius: 8px; border: 1px solid var(--line); background: var(--card); }
+  .chips span.me { border-color: var(--ink); font-weight: 600; }
+  .chips span.done { text-decoration: line-through; color: var(--muted); }
+  .chips i { color: var(--faint); font-style: normal; }
+  .fine { font-size: 13px; color: var(--faint); margin-top: 18px; }
+
+  @media (max-width: 760px) {
+    main { padding-top: 40px; }
+    h1 { font-size: 27px; }
+    .stage { padding: 28px 20px; }
+    .what { font-size: 21px; }
+    .scene { grid-template-columns: 1fr; gap: 14px; justify-items: center; }
+    .verb .line { width: 2px; height: 28px; }
+    .verb .line::after { right: -5px; top: auto; bottom: -2px; border: 6px solid transparent; border-top: 8px solid var(--faint); border-bottom: 0; }
+    .app { align-items: center; }
+    .browser .view { grid-template-columns: 1fr; }
+    .browser .view:not(.single) .page { display: none; }
+    .world { grid-template-columns: 1fr; padding-top: 84px; }
+    .steps { margin-left: 0; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <div class="eyebrow" id="eyebrow"></div>
+  <h1 id="title"></h1>
+  <p class="lead" id="lead"></p>
+  <div class="cast" id="cast"></div>
+
+  <div class="controls">
+    <div class="seg">
+      <button class="before on" data-mode="before">Before</button>
+      <button class="after" data-mode="after">After</button>
+    </div>
+    <div class="steps" id="steps"></div>
+    <div class="arrows">
+      <button id="prev" aria-label="Previous step">←</button>
+      <button id="next" aria-label="Next step">→</button>
+    </div>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="scene" id="scene"></div>
+    <div class="what" id="what"></div>
+    <p class="why" id="why"></p>
+    <div id="worldWrap">
+      <div class="divider" id="worldLabel"></div>
+      <div class="world" id="world">
+        <svg class="links" id="links" aria-hidden="true"></svg>
+        <div class="item-pill" id="pill"><span class="fi"></span><span id="pillName"></span> <span class="to" id="pillTo"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="sections"></div>
+</main>
+
+<script>
+/* =====================================================================
+ * Scene builders. Each returns the HTML for the app the actor is using.
+ * ===================================================================== */
+const esc = (s) => String(s ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+
+/** A phone app, e.g. the customer's app. rows: [label, done?] */
+const phone = ({ where, title, sub, drop, rows = [] }) => `
+  <div class="where">${where}</div>
+  <div class="phone">
+    <div class="ttl">${esc(title)}</div>${sub ? `<div class="sub">${esc(sub)}</div>` : ''}
+    ${drop ? `<div class="drop">${esc(drop)}</div>` : ''}
+    ${rows.map(([label, ok]) => `<div class="row"><span class="fi"></span>${esc(label)}${ok ? '<span class="ok">✓</span>' : ''}</div>`).join('')}
+  </div>`;
+
+/**
+ * A web app page with an optional side panel (drawer).
+ * panel: { title, sub, file, buttons: [{ label, hot }], msg: ['ok'|'err', text] }
+ * toast: ['ok'|'err', text]  — an app-level toast, bottom right.
+ */
+const browser = ({ where, url, pageTitle, pageColor = 'var(--c1)', panel, toast }) => `
+  <div class="where">${where}</div>
+  <div class="browser">
+    <div class="top"><i></i><i></i><i></i><span class="url">${esc(url)}</span></div>
+    <div class="view${panel ? '' : ' single'}">
+      <div class="page"><div class="h" style="color:${pageColor}">${esc(pageTitle)}</div><div class="bar" style="width:80%"></div><div class="bar" style="width:60%"></div><div class="bar" style="width:70%"></div><div class="bar" style="width:45%"></div></div>
+      ${panel ? `<div class="panel">
+        <div class="t">${esc(panel.title)}</div>${panel.sub ? `<div class="s">${esc(panel.sub)}</div>` : ''}
+        ${panel.file ? `<div class="file"><span class="fi"></span>${esc(panel.file)}</div>` : ''}
+        ${(panel.buttons || []).map((b) => `<span class="ui-btn${b.hot ? ' hot' : ''}">${esc(b.label)}</span>`).join('')}
+        ${panel.msg ? `<div class="inline-msg ${panel.msg[0]}">${esc(panel.msg[1])}</div>` : ''}
+      </div>` : ''}
+      ${toast ? `<div class="app-toast ${toast[0]}"><span class="i">i</span>${esc(toast[1])}</div>` : ''}
+    </div>
+  </div>`;
+
+/**
+ * What the system does behind a click, as a checklist.
+ * tasks: [label, state, result]; state: done | now | todo | fail | bad | good
+ * note: [text, 'stale'?] — something the system keeps; then: a closing line.
+ */
+const checklist = ({ where, title, tasks, note, then }) => `
+  <div class="where">${where}</div>
+  <div class="runner">
+    <div class="t"><span class="spin"></span>${esc(title)}</div>
+    ${tasks.map(([label, st, res], i) => `
+      <div class="task ${st}"><span class="ic">${st === 'done' || st === 'good' ? '✓' : st === 'fail' || st === 'bad' ? '!' : i + 1}</span>
+        <span>${esc(label)}${res ? `<span class="res">${esc(res)}</span>` : ''}</span></div>`).join('')}
+    ${note ? `<div class="note ${note[1] || ''}">${esc(note[0])}</div>` : ''}
+    ${then ? `<div class="then">${esc(then)}</div>` : ''}
+  </div>`;
+
+const ICON = {
+  person: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/></svg>',
+  pro: '<svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="7.5" r="3.8"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7z"/><path d="M10.6 14.2h2.8l-.5 2.2.9 3.6-1.8 1.4-1.8-1.4.9-3.6z" fill="var(--card)"/></svg>',
+  system: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1"/></svg>',
+};
+
+/* =====================================================================
+ * THE STORY — replace everything in this block for a new storyboard.
+ * The example is a shop's Create order retry moving a customer's artwork.
+ *
+ * actors:  who acts. icon: person | pro | system. color: a CSS colour.
+ * world:   the "what it does to the data" view (omit to hide it).
+ *          cards: the places the item can be linked to; item: the thing.
+ * steps:   one per human action. A step is either the same in both
+ *          versions ({ ...fields }) or split ({ before: {...}, after: {...} }).
+ *          Split steps are highlighted as where Before and After part ways.
+ * step fields:
+ *   actor, verb, app (a scene builder's HTML), what (big line), why,
+ *   tone: 'bad' | 'good' (only on split steps),
+ *   world: { link: card id | null, absent?: [card ids not made yet],
+ *            cards?: { [id]: { state?: 'lost'|'kept', body?: html, msg?: text } } }
+ *   Each step states its own world in full; nothing carries over.
+ * ===================================================================== */
+const STORY = {
+  pageTitle: '#102 · Create retry keeps the order’s artwork',
+  eyebrow: { text: 'PR #102', href: 'https://github.com/example/shop/pull/102' },
+  title: 'A retried Create order could take the artwork away from the order it came from.',
+  lead: 'It only happens when Create fails partway, staff run <strong>Update order</strong>, then retry Create. The retry trusted what the failed attempt <strong>remembered</strong> about the artwork, which the Update had made out of date. The fix: <strong>check again on every attempt</strong>.',
+  actors: {
+    customer: { name: 'Sam', role: 'the customer', icon: 'person', color: 'var(--orange)' },
+    staff: { name: 'Staff', role: 'in the shop admin', icon: 'pro', color: 'var(--blue)' },
+    shop: { name: 'Shop', role: 'behind the button, automatically', icon: 'system', color: 'var(--system)' },
+  },
+  world: {
+    label: 'What it does to the artwork',
+    item: 'Artwork',
+    unlinked: '· not linked yet',
+    cards: [
+      { id: 'A', title: 'Order A', sub: 'where the print request was sent from', color: 'var(--c1)' },
+      { id: 'B', title: 'Order B', sub: 'the new one Create makes', color: 'var(--c2)' },
+    ],
+  },
+  steps: [],
+  sections: [
+    { title: 'Why moving it is bad', html: '<p>The artwork can belong to <strong>one order at a time</strong>. Linking it to B takes it off A, so A’s print job quietly loses it. Cancel B later and the artwork goes with it.</p>' },
+    { title: 'Safe to check again, now #101 is in', html: '<p>Checking again relies on the print queue skipping files it already has. Until #101 (merged), it missed a file it had converted to PDF, so checking again added that file twice.</p><div class="chips"><span class="done">#101 ✓</span><i>→</i><span class="me">#102</span><i>→</i><span>#103</span></div>' },
+  ],
+  fine: 'Sketches, not screenshots. Sam and the artwork are made up; drawer messages other than the artwork one are paraphrased.',
+};
+
+const T = { check: 'Check which order the artwork belongs to', make: 'Make Order B', link: 'Link the artwork to B' };
+const drawer = (hot, msg) => browser({
+  where: '<b>Shop admin</b> · Order A · Print request drawer', url: 'Shop admin · Order A', pageTitle: 'Order A',
+  panel: { title: 'Sam’s print request', sub: 'Answered · 1 file', file: 'Artwork',
+    buttons: [{ label: 'Create order', hot: hot === 'create' }, { label: 'Update order', hot: hot === 'update' }], msg },
+});
+const firstTry = (note) => checklist({ where: '<b>Shop</b> · Create order, first try', title: 'Create order',
+  tasks: [[T.check, 'done', 'Not linked to any order'], [T.make, 'done', 'Made'], [T.link, 'fail', 'Failed, e.g. a dropped connection']], note: [note] });
+const firstTryStep = (note) => ({ actor: 'staff', verb: 'clicks Create', app: firstTry(note),
+  what: 'Staff click Create order, and it fails at the last step.',
+  why: 'An ordinary failure. Order B was already made, so the shop keeps it to stop a retry making a second one.', world: { link: null } });
+STORY.steps = [
+  { actor: 'customer', verb: 'uploads',
+    app: phone({ where: '<b>Print app</b> · on Sam’s phone', title: 'Your artwork', sub: 'For your print request', drop: 'Tap to upload', rows: [['Artwork', true]] }),
+    what: 'Sam uploads artwork to the print request sent from Order A.', why: 'It isn’t linked to any order yet.',
+    world: { link: null, absent: ['B'] } },
+  { before: firstTryStep('Kept for a retry: Order B, and “not Order A’s”'),
+    after: firstTryStep('Kept for a retry: Order B'),
+    same: true },
+  { actor: 'staff', verb: 'clicks Update', app: drawer('update', ['ok', 'Order updated.']),
+    what: 'Staff run Update order instead.', why: 'The answers go into Order A, and the artwork is linked to A.', world: { link: 'A' } },
+  { before: { actor: 'staff', verb: 'clicks Create again', tone: 'bad',
+      app: checklist({ where: '<b>Shop</b> · Create order, retry', title: 'Create order',
+        tasks: [[T.check, 'bad', 'Skipped: trusts “not Order A’s” from the first try'], [T.make, 'done', 'Reused'], [T.link, 'bad', 'Linked to B, taken off Order A']] }),
+      what: 'The retry moves the artwork from Order A to Order B.',
+      why: 'It trusted what the first try found, which the Update had made untrue. Nothing tells the staff.',
+      world: { link: 'B', cards: { A: { state: 'lost', body: '<div class="doc gone"><span class="fi"></span>Artwork moved to B</div>', msg: 'Missing, and nobody was told.' } } } },
+    after: { actor: 'staff', verb: 'clicks Create again', tone: 'good',
+      app: checklist({ where: '<b>Shop</b> · Create order, retry', title: 'Create order',
+        tasks: [[T.check, 'good', 'Checked again: belongs to Order A'], [T.make, 'done', 'Reused'], [T.link, 'good', 'Skipped: stays with Order A']],
+        then: 'Then the drawer closes and Order B opens, with a toast: “The artwork stays with the order this request came from.”' }),
+      what: 'The retry checks again, and leaves the artwork with Order A.',
+      why: 'Which order the artwork belongs to is decided on every try, as Update already does. Only Order B is reused, so there’s no duplicate.',
+      world: { link: 'A', cards: { A: { state: 'kept', msg: 'Kept.' } } } } },
+];
+/* ===================== end of THE STORY ===================== */
+
+/* Engine. Nothing below needs editing. */
+const N = STORY.steps.length;
+let mode = 'before', step = 0;
+const $ = (id) => document.getElementById(id);
+// A split step marked `same: true` differs only in a detail (e.g. what's
+// remembered), so it isn't flagged as where the versions part ways.
+const isKey = (i) => Boolean(STORY.steps[i].before) && !STORY.steps[i].same;
+function at(i) {
+  const raw = STORY.steps[i];
+  return raw.before ? raw[mode] : raw;
+}
+
+document.title = STORY.pageTitle;
+$('eyebrow').innerHTML = STORY.eyebrow.href ? `<a href="${STORY.eyebrow.href}">${esc(STORY.eyebrow.text)}</a>` : esc(STORY.eyebrow.text);
+$('title').textContent = STORY.title;
+$('lead').innerHTML = STORY.lead;
+const tint = (c) => `background:color-mix(in srgb, ${c} 15%, transparent);color:${c}`;
+$('cast').innerHTML = Object.entries(STORY.actors).map(([, a]) =>
+  `<div><span class="mini" style="${tint(a.color)}">${ICON[a.icon]}</span><b>${esc(a.name)}</b><span class="r">${esc(a.role)}</span></div>`).join('');
+$('sections').innerHTML = STORY.sections.map((s) => `<section><h2>${esc(s.title)}</h2>${s.html}</section>`).join('')
+  + (STORY.fine ? `<section style="margin-top:32px"><p class="fine">${esc(STORY.fine)}</p></section>` : '');
+
+const W = STORY.world;
+if (!W) $('worldWrap').hidden = true;
+else {
+  $('worldLabel').textContent = W.label;
+  $('pillName').textContent = W.item;
+  $('world').style.setProperty('--cols', W.cards.length);
+  W.cards.forEach((c) => {
+    const el = document.createElement('div');
+    el.className = 'ent'; el.id = 'ent-' + c.id;
+    el.innerHTML = `<h3 style="color:${c.color}">${esc(c.title)}</h3><div class="sub">${esc(c.sub)}</div><div class="body"></div>`;
+    $('world').appendChild(el);
+  });
+}
+
+function renderSteps() {
+  const el = $('steps');
+  el.innerHTML = '';
+  const firstKey = STORY.steps.findIndex((_, i) => isKey(i));
+  for (let i = 0; i < N; i++) {
+    if (i === firstKey && i > 0) { const g = document.createElement('span'); g.className = 'gap'; el.appendChild(g); }
+    const b = document.createElement('button');
+    b.textContent = i + 1;
+    b.className = (i < step ? 'done' : '') + (i === step ? ' cur' : '') + (isKey(i) ? ' key' : '');
+    b.setAttribute('aria-label', `Step ${i + 1}`);
+    b.onclick = () => go(i);
+    el.appendChild(b);
+  }
+}
+
+function drawLink(link) {
+  const svg = $('links');
+  svg.innerHTML = '';
+  if (!link) return;
+  const w = $('world').getBoundingClientRect();
+  const f = $('pill').getBoundingClientRect();
+  const t = $('ent-' + link).getBoundingClientRect();
+  const color = W.cards.find((c) => c.id === link).color;
+  const x1 = f.left + f.width / 2 - w.left, y1 = f.bottom - w.top;
+  // Stacked cards (narrow screen): a straight line to a lower card would cross
+  // the ones above it, so route down the right margin and enter from the side.
+  const above = W.cards.map((c) => $('ent-' + c.id).getBoundingClientRect()).filter((r) => r.bottom <= t.top);
+  if (above.length) {
+    const top = Math.min(...above.map((r) => r.top)) - w.top;
+    const xr = w.width + 14, yb = t.top + t.height / 2 - w.top, xb = t.right - w.left;
+    const yh = (y1 + top) / 2, r = Math.min(12, yh - y1);
+    svg.innerHTML = `<path d="M${x1},${y1} Q${x1},${yh} ${x1 + r},${yh} L${xr - r},${yh} Q${xr},${yh} ${xr},${yh + r} L${xr},${yb - 14} Q${xr},${yb} ${xb},${yb}" stroke="${color}"/>`;
+    return;
+  }
+  const x2 = t.left + t.width / 2 - w.left, y2 = t.top - w.top, my = (y1 + y2) / 2;
+  svg.innerHTML = `<path d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}" stroke="${color}"/>`;
+}
+
+function render() {
+  const s = at(step);
+  const a = STORY.actors[s.actor];
+  $('scene').innerHTML = `
+    <div class="actor"><div class="avatar" style="${tint(a.color)}">${ICON[a.icon]}</div>
+      <div class="name">${esc(a.name)}</div><div class="role">${esc(a.role)}</div></div>
+    <div class="verb"><span>${esc(s.verb)}</span><span class="line"></span></div>
+    <div class="app">${s.app}</div>`;
+  $('what').textContent = s.what;
+  $('why').textContent = s.why;
+  $('stage').className = 'stage' + (s.tone ? ' ' + s.tone : '');
+
+  if (W) {
+    const link = s.world?.link ?? null;
+    const name = W.cards.find((c) => c.id === link)?.title;
+    $('pillTo').textContent = link ? `→ linked to ${name}` : W.unlinked;
+    W.cards.forEach((c) => {
+      const absent = (s.world?.absent || []).includes(c.id);
+      const cs = s.world?.cards?.[c.id] || {};
+      const el = $('ent-' + c.id);
+      el.className = 'ent' + (absent ? ' absent' : cs.state ? ' ' + cs.state : '');
+      const body = absent ? '<div class="none">Not made yet</div>'
+        : cs.body ?? (link === c.id ? `<div class="doc"><span class="fi"></span>${esc(W.item)}</div>` : '<div class="none">Nothing linked</div>');
+      el.querySelector('.body').innerHTML = body + (cs.msg ? `<div class="msg">${esc(cs.msg)}</div>` : '');
+    });
+    requestAnimationFrame(() => drawLink(link));
+  }
+
+  $('prev').disabled = step === 0;
+  $('next').disabled = step === N - 1;
+  document.querySelectorAll('.seg button').forEach((b) => b.classList.toggle('on', b.dataset.mode === mode));
+  renderSteps();
+}
+
+function go(i) { step = Math.max(0, Math.min(N - 1, i)); render(); }
+$('prev').onclick = () => go(step - 1);
+$('next').onclick = () => go(step + 1);
+document.querySelectorAll('.seg button').forEach((b) => (b.onclick = () => { mode = b.dataset.mode; render(); }));
+document.addEventListener('keydown', (e) => {
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === 'ArrowRight') go(step + 1);
+  else if (e.key === 'ArrowLeft') go(step - 1);
+});
+window.addEventListener('resize', () => W && drawLink(at(step).world?.link ?? null));
+render();
+</script>
+</body>
+</html>
