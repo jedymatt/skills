@@ -369,7 +369,7 @@ $('lead').innerHTML = STORY.lead;
 const tint = (c) => `background:color-mix(in srgb, ${c} 15%, transparent);color:${c}`;
 $('cast').innerHTML = Object.entries(STORY.actors).map(([, a]) =>
   `<div><span class="mini" style="${tint(a.color)}">${ICON[a.icon]}</span><b>${esc(a.name)}</b><span class="r">${esc(a.role)}</span></div>`).join('');
-$('sections').innerHTML = STORY.sections.map((s) => `<section><h2>${esc(s.title)}</h2>${s.html}</section>`).join('')
+$('sections').innerHTML = (STORY.sections || []).map((s) => `<section><h2>${esc(s.title)}</h2>${s.html}</section>`).join('')
   + (STORY.fine ? `<section style="margin-top:32px"><p class="fine">${esc(STORY.fine)}</p></section>` : '');
 
 const W = STORY.world;
